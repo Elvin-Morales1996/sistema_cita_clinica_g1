@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solicitud de Cita</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .form-card {
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background-color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="form-card">
+      <h2 class="mb-4 text-center">Solicitud de Cita</h2>
+      <form>
+        <!--Nombre completo del paciente-->>
+        <div class="mb-3">
+          <label for="nombre" class="form-label">Ingrese su nombre</label>
+          <input type="text" class="form-control" id="nombre" name="nombre" required>
+        </div>
+                        
+        <!--Edad completa del paciente-->
+        <div class="mb-3">
+          <label for="edad" class="form-label">Edad</label>
+          <input type="number" class="form-control" id="edad" name="edad" min="0" max="120">
+        </div>
+
+        <!-- Género -->
+        <div class="mb-3">
+          <label class="form-label">Género</label>
+          <select class="form-select" name="genero" required>
+            <option value="">Selecciona una opción</option>
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+
+        <!-- Fecha -->
+        <div class="mb-3">
+          <label for="fecha" class="form-label">Fecha de la cita</label>
+          <input type="date" class="form-control" id="fecha" name="fecha">
+        </div>
+
+        <!-- Hora -->
+        <div class="mb-3">
+          <label for="hora" class="form-label">Hora de la cita</label>
+          <input type="time" class="form-control" id="hora" name="hora">
+        </div>
+
+        <!-- Médico -->
+        <div class="mb-3">
+          <label class="form-label">Seleccione el médico</label>
+          <select class="form-select" name="medico" required>
+            <option value="">Selecciona una opción</option>
+            <option value="dra_maria_lopez">Dra. María López</option>
+            <option value="dra_ana_fernandez">Dra. Ana Fernández</option>
+            <option value="dr_carlos_rodriguez">Dr. Carlos Rodríguez</option>
+            <option value="dra_silvia_mendoza">Dra. Silvia Mendoza</option>
+            <option value="dr_jorge_ramirez">Dr. Jorge Ramírez</option>
+            <option value="dra_rosa_jimenez">Dra. Rosa Jiménez</option>
+            <option value="dr_ricardo_morales">Dr. Ricardo Morales</option>
+            <option value="dr_antonio_castro">Dr. Antonio Castro</option>
+          </select>
+        </div>
+
+        <!-- Especialidad -->
+        <div class="mb-3">
+          <label class="form-label">Seleccione la especialidad</label>
+          <select class="form-select" name="especialidad" required>
+            <option value="">Selecciona una opción</option>
+            <option value="cardiologia">Cardiología</option>
+            <option value="neumologia">Neumología</option>
+            <option value="gastroenterologia">Gastroenterología</option>
+            <option value="nefrologia">Nefrología</option>
+            <option value="endocrinologia">Endocrinología</option>
+            <option value="hematologia">Hematología</option>
+            <option value="cirugia_general">Cirugía General</option>
+            <option value="urologia">Urología</option>
+            <option value="neonatologia">Neonatología</option>
+          </select>
+        </div>
+
+        <!-- Botón de envío -->
+        <div class="text-center">
+          <button type="submit" class="btn btn-primary">Ingresar cita</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
