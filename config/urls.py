@@ -14,9 +14,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path
+from django.shortcuts import render  # 👈 importante para el lambda
+from apps.medical.views.login_view import login_view # 👈 importa tu vista
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', login_view, name='login'),  # login como vista principal
+    path('home/', lambda request: render(request, 'medical/home.html'), name='home'), # temporal para pruebas
 ]

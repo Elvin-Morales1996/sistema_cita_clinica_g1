@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Inicio de Sesión</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #e3f2fd 0%, #fff3e0 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-container {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-box {
+            background-color: #ffffff;
+            padding: 40px 50px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(255, 165, 0, 0.15); /* sombra naranja suave */
+            text-align: center;
+            width: 420px;
+            border: 2px solid #2196f3; /* borde celeste */
+            transition: box-shadow 0.3s ease;
+        }
+        .login-box:hover {
+            box-shadow: 0 6px 30px rgba(255, 165, 0, 0.3);
+        }
+        .login-logo img {
+            width: 160px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            border: 1.5px solid #2196f3;
+            padding: 5px;
+            background-color: #fff3e0; /* fondo naranja suave detrás del logo */
+        }
+        h3 {
+            color: #f57c00; /* naranja oscuro para título */
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+        label {
+            color: #424242; /* texto gris oscuro para etiquetas */
+            font-weight: 600;
+        }
+        .form-control {
+            border: 1.8px solid #2196f3; /* borde celeste */
+            border-radius: 6px;
+            transition: border-color 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #f57c00; /* borde naranja al enfocar */
+            box-shadow: 0 0 8px #f57c00;
+            outline: none;
+        }
+        .btn-primary {
+            background-color: #f57c00; /* naranja */
+            border-color: #f57c00;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #ef6c00;
+            border-color: #ef6c00;
+        }
+        .alert-danger {
+            border-radius: 6px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-logo">
+                <img src="{% static 'img/logo.jpg' %}" alt="Logo" />
+            </div>
+            <h3>Bienvenido</h3>
+
+            {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3 text-start">
+                    <label for="username" class="form-label">Usuario</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Usuario" required />
+                </div>
+                <div class="mb-3 text-start">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Contraseña" required />
+                </div>
+                <button type="submit" class="btn btn-primary btn-block mt-4 w-100">Iniciar Sesión</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
