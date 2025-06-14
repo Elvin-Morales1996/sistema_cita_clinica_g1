@@ -20,10 +20,12 @@ from django.urls import path
 from django.shortcuts import render  # 👈 importante para el lambda
 from apps.medical.views.login_view import login_view # 👈 importa tu vista
 from apps.medical.views.crear_perfil_medico import crear_perfil_medico
+from apps.medical.views.registrar_paciente import registrar_paciente
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', login_view, name='login'),  # login como vista principal
     path('home/', lambda request: render(request, 'medical/home.html'), name='home'), 
     path('medicos/crear/', crear_perfil_medico, name='crear_perfil_medico'),
+    path('pacientes/registrar/', registrar_paciente, name='registrar_paciente'),
 ]
