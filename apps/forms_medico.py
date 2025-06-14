@@ -14,11 +14,19 @@ class PerfilMedicoForm(forms.ModelForm):
             
 
 class PacienteForm(forms.ModelForm):
-    class Meta:
+     class Meta:
         model = Paciente
-        fields = ['nombre', 'apellido', 'edad', 'genero']
+        fields = [
+            'identificacion',
+            'nombre',
+            'apellido',
+            'fecha_nacimiento',
+            'sexo',
+            'direccion',
+            'contacto'
+        ]
 
-    def __init__(self, *args, **kwargs):
+def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = 'form-control'
+           visible.field.widget.attrs['class'] = 'form-control'
