@@ -136,7 +136,7 @@
                 <img src="{% static 'img/logo.jpg' %}" alt="Logo" />
             </div>
             <a href="{% url 'registrar_paciente' %}">🏥 Registro de Pacientes</a>
-            <a href="#">📅 Solicitud de Cita</a>
+            <a href="{% url 'crear_cita' %}">📅 Solicitud de Cita</a>
 
             <!-- Submenú colapsable para Gestión de Médicos -->
             <a class="nav-link" data-bs-toggle="collapse" href="#medicosMenu" role="button" aria-expanded="false" aria-controls="medicosMenu">
