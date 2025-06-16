@@ -25,12 +25,13 @@ from apps.medical.views.ver_medico import listar_medicos
 from apps.medical.views.ver_calendario import ver_calendario
 from apps.medical.views.actualizar_medico import actualizar_medico
 from apps.medical.views.crear_cita import crear_cita
+from apps.medical.views.home import home
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', login_view, name='login'),  # login como vista principal
-    path('home/', lambda request: render(request, 'medical/home.html'), name='home'), 
+    path('home/', home, name='home'), 
     path('medicos/crear/', crear_perfil_medico, name='crear_perfil_medico'),
     path('pacientes/registrar/', registrar_paciente, name='registrar_paciente'),
     path('medicos/', listar_medicos, name='listar_medicos'),
