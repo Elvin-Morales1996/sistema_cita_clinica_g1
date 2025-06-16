@@ -24,6 +24,8 @@ from apps.medical.views.registrar_paciente import registrar_paciente
 from apps.medical.views.ver_medico import listar_medicos
 from apps.medical.views.ver_calendario import ver_calendario
 from apps.medical.views.actualizar_medico import actualizar_medico
+from apps.medical.views.crear_cita import crear_cita
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,4 +36,6 @@ urlpatterns = [
     path('medicos/', listar_medicos, name='listar_medicos'),
     path('medico/<int:medico_id>/calendario/', ver_calendario, name='ver_calendario_medico'),
     path('medicos/<int:medico_id>/editar/', actualizar_medico, name='actualizar_medico'),
+    path('citas/crear/', crear_cita, name='crear_cita'),
+
 ]
