@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from apps.forms_medico import PacienteForm
+from apps.forms_paciente import PacienteForm
 
 def registrar_paciente(request):
     if request.method == 'POST':

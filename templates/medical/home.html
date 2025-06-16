@@ -143,8 +143,11 @@
                 👨‍⚕️ Gestión de Médicos
             </a>
             <div class="collapse ps-3" id="medicosMenu">
+                 <!-- Submenú colapsable para Gestión de Médicos -->
+            <div class="collapse ps-3" id="medicosMenu">
                 <a href="{% url 'crear_perfil_medico' %}" class="d-block mt-1">➕ Crear Perfil Médico</a>
-                <a href="#" class="d-block mt-1">📋 Listado de Médicos</a>
+                <a href="{% url 'listar_medicos' %}" class="d-block mt-1">📋 Listado de Médicos</a>
+            </div>
             </div>
 
             <a href="#">📊 Reportes</a>
