@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Detalle de Consulta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff6600 0%, #00aaff 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .detail-container {
+            max-width: 700px;
+            width: 100%;
+            background: white;
+            padding: 35px 40px 40px 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 3px solid #00aaff;
+            position: relative;
+        }
+        .logo {
+            display: block;
+            margin: 0 auto 25px auto;
+            max-width: 140px;
+            height: auto;
+        }
+        h2 {
+            color: #ff6600;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+            letter-spacing: 1.2px;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #222222;
+        }
+        .btn-primary {
+            background: linear-gradient(45deg, #00aaff, #0077cc);
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 170, 255, 0.6);
+            transition: background 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #ff6600, #cc5200);
+            box-shadow: 0 6px 20px rgba(255, 102, 0, 0.7);
+        }
+        .btn-secondary {
+            background: #222222;
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: background 0.3s ease;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #555555;
+            color: white;
+        }
+        .btn-danger {
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="detail-container">
+        <img src="{% static 'img/logo.jpg' %}" alt="Logo" class="logo" />
+
+        <h2>Detalle de Consulta Médica</h2>
+
+        <p><span class="info-label">Paciente:</span> {{ consulta.paciente }}</p>
+        <p><span class="info-label">Médico:</span> {{ consulta.medico }}</p>
+        <p><span class="info-label">Fecha de la consulta:</span> {{ consulta.fecha }}</p>
+        <p><span class="info-label">Síntomas:</span> {{ consulta.sintomas }}</p>
+        <p><span class="info-label">Diagnóstico:</span> {{ consulta.diagnostico }}</p>
+        <p><span class="info-label">Tratamiento:</span> {{ consulta.tratamiento }}</p>
+        <p><span class="info-label">Observaciones:</span> {{ consulta.observaciones }}</p>
+
+        {% if consulta.archivo %}
+        <p><span class="info-label">Archivo adjunto:</span>
+            <a href="{{ consulta.archivo.url }}" target="_blank">Ver/Descargar</a>
+        </p>
+        {% endif %}
+
+        <div class="d-flex justify-content-between mt-4">
+
+            <a href="{% url 'home' %}" class="btn btn-secondary px-4">Volver</a>
+        </div>
+    </div>
+</body>
+</html>
