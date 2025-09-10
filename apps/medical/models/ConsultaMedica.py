@@ -11,7 +11,7 @@ class ConsultaMedica(models.Model):
     sintomas = models.TextField()
     diagnostico = models.TextField()
     tratamiento = models.TextField()
-    observaciones = models.TextField()
+    observaciones = models.TextField(blank=True, null=True, default="")
     archivos = models.FileField(upload_to="consultas/", blank=True, null=True)
     creado_en = models.DateTimeField(auto_now_add=True)
 
