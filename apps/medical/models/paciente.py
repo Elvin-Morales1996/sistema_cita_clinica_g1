@@ -11,7 +11,7 @@ class Paciente(models.Model):
         ('O', 'Otro'),
     ])
     direccion = models.TextField()
-    contacto = models.CharField(max_length=20)
+    contacto = models.EmailField(max_length=250)
 
     def __str__(self):
      return f"{self.nombre} {self.apellido}"

@@ -25,12 +25,6 @@
             border: 3px solid #00aaff;
             position: relative;
         }
-        .logo {
-            display: block;
-            margin: 0 auto 25px auto;
-            max-width: 140px;
-            height: auto;
-        }
         h2 {
             color: #ff6600;
             font-weight: 800;
@@ -84,6 +78,19 @@
 <body>
   <div class="form-container">
     <h2>Solicitud de Cita</h2>
+
+    <!-- Mensajes de Django -->
+    {% if messages %}
+        <div class="mb-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <form method="post">
       {% csrf_token %}
 
@@ -152,10 +159,35 @@
       especialidadField.value = medicoData[selectedId] || "";
     });
 
-    // Rellenar si ya hay seleccionado
     if (medicoSelect.value) {
       especialidadField.value = medicoData[medicoSelect.value] || "";
     }
+
+    // 🔹 Evitar fechas pasadas en el calendario
+    const fechaInput = document.getElementById("id_fecha");
+    if (fechaInput) {
+      const hoy = new Date();
+      const yyyy = hoy.getFullYear();
+      let mm = hoy.getMonth() + 1;
+      let dd = hoy.getDate();
+      if (dd < 10) dd = '0' + dd;
+      if (mm < 10) mm = '0' + mm;
+      const fechaMinima = `${yyyy}-${mm}-${dd}`;
+      fechaInput.setAttribute("min", fechaMinima);
+    }
+  </script>
+
+  <!-- Scripts Bootstrap y auto-hide de alert -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Desaparece automáticamente los alert después de 5 segundos
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
   </script>
 </body>
-</html> 
+</html>
