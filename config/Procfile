@@ -1,0 +1,1 @@
+web: gunicorn SISTEMA_CITA_CLINICA_G1.config.wsgi--log-file -

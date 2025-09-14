@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-lmz+5u$o=fidxcueajkivr893l6uirfnz^(3=l&*=c_g%g(vba
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
