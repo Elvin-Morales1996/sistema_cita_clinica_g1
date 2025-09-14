@@ -1,0 +1,288 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Asignación automática</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        background: linear-gradient(135deg, #ff6600 0%, #00aaff 100%);
+        min-height: 100vh;
+      }
+      .card {
+        max-width: 720px;
+        margin: 40px auto;
+        border: 3px solid #00aaff;
+        border-radius: 12px;
+      }
+      .card-header {
+        background: linear-gradient(45deg, #00aaff, #0077cc);
+        color: #fff;
+        font-weight: 700;
+      }
+      .btn-primary {
+        background: linear-gradient(45deg, #00aaff, #0077cc);
+        border: none;
+      }
+      .btn-primary:hover {
+        background: linear-gradient(45deg, #ff6600, #cc5200);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card shadow">
+      <div class="card-header">Buscar primera cita disponible</div>
+      <div class="card-body">
+        <form method="post" id="auto-form">
+          {% csrf_token %}
+
+          <div id="info-turno" class="alert alert-info d-none mt-2"></div>
+
+          <div class="mb-3">
+            <label for="id_especialidad" class="form-label">Especialidad</label>
+            {{ form.especialidad }}
+          </div>
+
+          <div class="mb-3">
+            <label for="id_medico" class="form-label">Médico</label>
+            {{ form.medico_id }}
+            <div class="form-text">
+              Si no eliges médico, buscamos cualquiera de la especialidad.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Día preferido</label>
+            {{ form.dias_preferidos }}
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="{{ form.hora_desde.id_for_label }}"
+                >Desde</label
+              >
+              {{ form.hora_desde }}
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label" for="{{ form.hora_hasta.id_for_label }}"
+                >Hasta</label
+              >
+              {{ form.hora_hasta }}
+            </div>
+          </div>
+
+          <button class="btn btn-primary">Buscar</button>
+          <a href="{% url 'home' %}" class="btn btn-secondary ms-2">Cancelar</a>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Al cambiar especialidad, obtener médicos por AJAX y poblar <select id="id_medico">
+      const selEspecialidad = document.getElementById("id_especialidad");
+      const selMedico = document.getElementById("id_medico");
+
+      async function cargarMedicos(especialidad) {
+        selMedico.innerHTML = ""; // limpiar
+        // opción vacía al inicio
+        const opt0 = document.createElement("option");
+        opt0.value = "";
+        opt0.textContent = "— Seleccione —";
+        selMedico.appendChild(opt0);
+
+        if (!especialidad) return;
+
+        try {
+          const url =
+            `{% url 'medicos_especialidad' %}?especialidad=` +
+            encodeURIComponent(especialidad);
+          const resp = await fetch(url, {
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+          });
+          const data = await resp.json();
+          (data.medicos || []).forEach((m) => {
+            const opt = document.createElement("option");
+            opt.value = m.id;
+            opt.textContent = m.nombre;
+            selMedico.appendChild(opt);
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      selEspecialidad?.addEventListener("change", (e) => {
+        cargarMedicos(e.target.value);
+      });
+
+      // Si el form viene ya con una especialidad seleccionada (POST con errores, etc.), precarga
+      window.addEventListener("DOMContentLoaded", () => {
+        const espActual = selEspecialidad?.value || "";
+        if (espActual) {
+          cargarMedicos(espActual);
+        }
+      });
+    </script>
+    <script>
+      const selEspecialidad = document.getElementById("id_especialidad");
+      const selMedico = document.getElementById("id_medico");
+      const selDias = document.getElementById("id_dias_preferidos"); // Multiple
+      const inputDesde = document.getElementById("id_hora_desde");
+      const inputHasta = document.getElementById("id_hora_hasta");
+
+      // <div id="info-turno" class="alert alert-info d-none"></div>
+      let infoTurno = document.getElementById("info-turno");
+      if (!infoTurno) {
+        infoTurno = document.createElement("div");
+        infoTurno.id = "info-turno";
+        infoTurno.className = "alert alert-info d-none mt-2";
+        document.querySelector("form#auto-form .card-body")?.prepend(infoTurno);
+      }
+
+      // Mapea 0..6 a etiquetas
+      const DIA_LABEL = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+
+      async function cargarMedicos(especialidad) {
+        selMedico.innerHTML = "";
+        const opt0 = document.createElement("option");
+        opt0.value = "";
+        opt0.textContent = "— Seleccione —";
+        selMedico.appendChild(opt0);
+
+        if (!especialidad) return;
+        try {
+          const url =
+            `{% url 'medicos_especialidad' %}?especialidad=` +
+            encodeURIComponent(especialidad);
+          const resp = await fetch(url, {
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+          });
+          const data = await resp.json();
+          (data.medicos || []).forEach((m) => {
+            const opt = document.createElement("option");
+            opt.value = m.id;
+            opt.textContent = m.nombre;
+            selMedico.appendChild(opt);
+          });
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      async function cargarTurnoDeMedico(medicoId) {
+        limpiarInfoTurno();
+        if (!medicoId) return;
+
+        try {
+          const url = `{% url 'api_turno_medico' medico_id=0 %}`.replace(
+            "/0/",
+            "/" + medicoId + "/"
+          );
+          const resp = await fetch(url, {
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+          });
+          const data = await resp.json();
+          if (!data.ok) throw new Error(data.error || "Error de turno");
+
+          // Mostrar info del turno
+          infoTurno.classList.remove("d-none");
+          const rango =
+            `${data.turno.desde} – ${data.turno.hasta}` +
+            (data.turno.cruza_medianoche ? " (cruza medianoche)" : "");
+          infoTurno.innerHTML = `
+        <strong>Turno de ${data.medico.nombre}:</strong><br>
+        ${data.turno.label}<br>
+        <span class="badge text-bg-primary mt-1">Horario: ${rango}</span>
+      `;
+
+          // Restringir días preferidos a los días del turno
+          const habilitados = new Set(data.turno.dias); // [0..6]
+          if (selDias && selDias.options) {
+            // Deja SOLO los días que trabaja
+            const opciones = Array.from(selDias.options);
+            opciones.forEach((op) => op.remove());
+            // añadimos opciones válidas en orden Lun..Dom
+            data.turno.dias.forEach((d) => {
+              const op = document.createElement("option");
+              op.value = String(d);
+              op.textContent = DIA_LABEL[d];
+              selDias.appendChild(op);
+            });
+          }
+
+          // Prefijar rango horario
+          if (inputDesde) inputDesde.value = data.turno.desde;
+          if (inputHasta) inputHasta.value = data.turno.hasta;
+        } catch (e) {
+          console.error(e);
+          infoTurno.classList.remove("d-none");
+          infoTurno.classList.replace("alert-info", "alert-warning");
+          infoTurno.textContent = "No se pudo cargar el turno del médico.";
+        }
+      }
+
+      function limpiarInfoTurno() {
+        infoTurno.classList.add("d-none");
+        infoTurno.classList.remove("alert-warning");
+        infoTurno.classList.add("alert-info");
+        infoTurno.innerHTML = "";
+      }
+
+      async function chequearDisponibilidadDia() {
+        const medicoId = selMedico.value;
+        // si es multiple, tomamos el primer seleccionado para feedback
+        const dayVal = selDias && selDias.value ? selDias.value : null;
+        if (!medicoId || dayVal === null) return;
+
+        try {
+          const url = `{% url 'api_disponibilidad_medico' %}?medico_id=${encodeURIComponent(
+            medicoId
+          )}&weekday=${encodeURIComponent(dayVal)}`;
+          const resp = await fetch(url, {
+            headers: { "X-Requested-With": "XMLHttpRequest" },
+          });
+          const data = await resp.json();
+          const badge =
+            document.getElementById("badge-disponibilidad") ||
+            (() => {
+              const b = document.createElement("span");
+              b.id = "badge-disponibilidad";
+              b.className = "badge ms-2";
+              infoTurno.appendChild(b);
+              return b;
+            })();
+          badge.textContent =
+            data.mensaje || (data.disponible ? "Disponible" : "No disponible");
+          badge.className =
+            "badge ms-2 " +
+            (data.disponible ? "text-bg-success" : "text-bg-secondary");
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      selEspecialidad?.addEventListener("change", (e) => {
+        cargarMedicos(e.target.value);
+        limpiarInfoTurno();
+      });
+
+      selMedico?.addEventListener("change", (e) => {
+        cargarTurnoDeMedico(e.target.value);
+      });
+
+      selDias?.addEventListener("change", chequearDisponibilidadDia);
+
+      // precarga si el form viene con datos
+      window.addEventListener("DOMContentLoaded", () => {
+        const espActual = selEspecialidad?.value || "";
+        if (espActual) cargarMedicos(espActual);
+        const medicoActual = selMedico?.value || "";
+        if (medicoActual) cargarTurnoDeMedico(medicoActual);
+      });
+    </script>
+  </body>
+</html>
