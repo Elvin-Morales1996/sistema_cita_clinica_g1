@@ -13,4 +13,5 @@ services:
         value: "False"
     postDeploy:
       - python manage.py migrate
-      - python manage.py shell -c "from apps.medical.models.usuario import Usuario; from django.contrib.auth.hashers import make_password; Usuario.objects.create(usuario='jaky', clave=make_password('admin123'), rol='Administrador')"
+      - python manage.py shell -c "from apps.medical.models.usuario import Usuario; from django.contrib.auth.hashers import make_password; Usuario.objects.get_or_create(usuario='jaky', defaults={'clave': make_password('admin123'), 'rol': 'Administrador'})"
+
