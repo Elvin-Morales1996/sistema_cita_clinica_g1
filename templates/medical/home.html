@@ -138,35 +138,29 @@
         <div class="logo-container">
           <img src="{% static 'img/logo.jpg' %}" alt="Logo" />
         </div>
+
+        <!-- Todos los usuarios ven esto -->
         <a href="{% url 'registrar_paciente' %}">🏥 Registro de Pacientes</a>
         <a href="{% url 'crear_cita' %}">📅 Solicitud de Cita</a>
+
+        <!-- Solo Administrador -->
+        {% if rol_usuario == 'Administrador' %}
         <a href="{% url 'auto_asignacion' %}" class="d-block mt-1">⚡ Asignación automática</a>
 
-        <!-- Submenú colapsable para Gestión de Médicos -->
-        <a
-          class="nav-link"
-          data-bs-toggle="collapse"
-          href="#medicosMenu"
-          role="button"
-          aria-expanded="false"
-          aria-controls="medicosMenu"
-        >
+        <!-- Gestión de Médicos -->
+        <a class="nav-link" data-bs-toggle="collapse" href="#medicosMenu" role="button" aria-expanded="false" aria-controls="medicosMenu">
           👨‍⚕️ Gestión de Médicos
         </a>
         <div class="collapse ps-3" id="medicosMenu">
-          <!-- Submenú colapsable para Gestión de Médicos -->
-          <div class="collapse ps-3" id="medicosMenu">
-            <a href="{% url 'crear_perfil_medico' %}" class="d-block mt-1"
-              >➕ Crear Perfil Médico</a
-            >
-            <a href="{% url 'listar_medicos' %}" class="d-block mt-1"
-              >📋 Listado de Médicos</a
-            >
-          </div>
+          <a href="{% url 'crear_perfil_medico' %}" class="d-block mt-1">➕ Crear Perfil Médico</a>
+          <a href="{% url 'listar_medicos' %}" class="d-block mt-1">📋 Listado de Médicos</a>
         </div>
 
-        <a href="#">📊 Reportes</a>
         <a href="{% url 'usuario' %}" class="d-block mt-1">🔐 Usuarios</a>
+        {% endif %}
+
+        <!-- Todos los usuarios ven esto -->
+        <a href="#">📊 Reportes</a>
       </nav>
 
       <!-- Contenido Principal -->
@@ -174,10 +168,9 @@
         <div class="navbar-top">
           Bienvenidos al sistema de Clínica Vital Salud
           <a href="{% url 'logout' %}" class="btn-logout">Cerrar Sesión</a>
-          <span style="position: absolute; left: 25px; top: 12px"
-            >{{ request.session.username }}</span
-          >
+          <span style="position: absolute; left: 25px; top: 12px">{{ request.session.username }}</span>
         </div>
+
         <div class="main-content">
           <!-- Tarjetas resumen -->
           <div class="row g-4">
@@ -217,7 +210,6 @@
                   <th>Médico</th>
                   <th>Fecha</th>
                   <th>Hora</th>
-                  <th>Estado</th>
                 </tr>
               </thead>
               <tbody>
@@ -227,11 +219,10 @@
                   <td>{{ cita.medico.nombre }}</td>
                   <td>{{ cita.fecha }}</td>
                   <td>{{ cita.hora }}</td>
-                  <td>{{ cita.estado }}</td>
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="5" class="text-center">
+                  <td colspan="4" class="text-center">
                     No hay citas programadas
                   </td>
                 </tr>

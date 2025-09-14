@@ -6,6 +6,10 @@ def home(request):
     hoy = date.today()
     citas_proximas = Cita.objects.filter(fecha__gte=hoy).order_by('fecha', 'hora')[:10]
 
+    # Obtener rol del usuario desde la sesión o desde el usuario logueado
+    rol_usuario = request.session.get('rol', 'Paciente')  # Ajusta según cómo guardes el rol
+
     return render(request, 'medical/home.html', {
-        'citas_proximas': citas_proximas
+        'citas_proximas': citas_proximas,
+        'rol_usuario': rol_usuario
     })
