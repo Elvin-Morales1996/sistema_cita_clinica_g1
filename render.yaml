@@ -11,9 +11,7 @@ services:
         value: "jaky123"
       - key: DEBUG
         value: "False"
-      - key: DATABASE_URL
-        value: "postgresql://sistema_cita_clinica_db_user:0qzMm1rh1R36S8PFnhUp8QznHA96kX4L@dpg-d33fsi6mcj7s73abuo1g-a.oregon-postgres.render.com:5432/sistema_cita_clinica_db"
     postDeploy:
       - python manage.py migrate
-      - python manage.py shell -c "from apps.medical.models.usuario import Usuario; from django.contrib.auth.hashers import make_password; Usuario.objects.get_or_create(usuario='jaky', defaults={'clave': make_password('admin123'), 'rol':'Administrador'})"
+      - python manage.py shell -c "from apps.medical.models.usuario import Usuario; from django.contrib.auth.hashers import make_password; Usuario.objects.get_or_create(usuario='jaky', defaults={'clave': make_password('admin123'), 'rol': 'Administrador'})"
 
