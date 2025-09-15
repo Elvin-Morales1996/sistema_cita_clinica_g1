@@ -38,6 +38,7 @@ from apps.medical.views.login_view import login_view, logout_view
 from apps.medical.views.auto_asignacion import auto_asignacion
 from apps.medical.views.medicos_especialidad import medicos_especialidad
 from apps.medical.views.medicos_turno import turno_de_medico, disponibilidad_por_dia
+from apps.medical.views.historial_views import buscar_pacientes, ver_historial, editar_historial, eliminar_historial
 
 
 urlpatterns = [
@@ -65,9 +66,15 @@ urlpatterns = [
     path("usuarios/<int:usuario_id>/actualizar/", actualizar_usuario, name="actualizar_usuario"),
     path("usuarios/<int:usuario_id>/eliminar/", eliminar_usuario, name="eliminar_usuario"),
 
-    # Auto-asignación 
+    # Auto-asignación
     path("citas/auto/", auto_asignacion, name="auto_asignacion"),
     path("api/medicos/medicos_especialidad/", medicos_especialidad, name="medicos_especialidad"),
     path("api/medicos/<int:medico_id>/turno/", turno_de_medico, name="api_turno_medico"),
     path("api/medicos/disponibilidad/", disponibilidad_por_dia, name="api_disponibilidad_medico"),
+
+    # Historial Clínico / Reportes
+    path("reportes/", buscar_pacientes, name="buscar_pacientes"),
+    path("historial/<int:paciente_id>/", ver_historial, name="ver_historial"),
+    path("historial/<int:paciente_id>/editar/", editar_historial, name="editar_historial"),
+    path("historial/<int:paciente_id>/eliminar/", eliminar_historial, name="eliminar_historial"),
 ]

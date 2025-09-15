@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}Sistema de Citas Médicas{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    />
+    <style>
+      :root {
+        --celeste: #2196f3;
+        --anaranjado: #f57c00;
+        --negro: #222222;
+        --fondo: #f9fafb;
+      }
+      body {
+        background-color: var(--fondo);
+        color: var(--negro);
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .sidebar {
+        min-height: 100vh;
+        background-color: var(--celeste);
+        color: white;
+        padding: 1.5rem 1rem;
+        width: 250px;
+      }
+      .sidebar .logo-container {
+        text-align: left;
+        margin-bottom: 2rem;
+      }
+      .sidebar .logo-container img {
+        width: 160px;
+        border-radius: 10px;
+        border: 3px solid var(--anaranjado);
+        padding: 5px;
+        background-color: white;
+      }
+      .sidebar a {
+        color: white;
+        display: block;
+        padding: 12px 15px;
+        margin-bottom: 8px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+        text-decoration: none;
+        font-size: 1.05rem;
+      }
+      .sidebar a:hover {
+        background-color: var(--anaranjado);
+        color: white;
+      }
+      .sidebar .collapse a {
+        font-weight: 500;
+        font-size: 0.95rem;
+      }
+      .main-content {
+        flex-grow: 1;
+        padding: 2.5rem 3rem;
+      }
+      .navbar-top {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid var(--celeste);
+        padding-bottom: 0.5rem;
+        font-size: 1.7rem;
+        font-weight: 700;
+        color: var(--negro);
+        position: relative;
+      }
+      .btn-logout {
+        background-color: var(--anaranjado);
+        border: none;
+        color: white;
+        font-weight: 500;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        transition: all 0.2s ease-in-out;
+        position: absolute;
+        right: 25px;
+        top: 12px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      .btn-logout:hover {
+        background-color: #e26a00;
+        transform: scale(1.03);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="d-flex">
+      <!-- Sidebar -->
+      <nav class="sidebar">
+        <div class="logo-container">
+          <img src="{% static 'img/logo.jpg' %}" alt="Logo" />
+        </div>
+
+        <!-- Todos los usuarios ven esto -->
+        <a href="{% url 'registrar_paciente' %}">🏥 Registro de Pacientes</a>
+        <a href="{% url 'crear_cita' %}">📅 Solicitud de Cita</a>
+
+        <!-- Solo Administrador -->
+        {% if rol_usuario == 'Administrador' %}
+        <a href="{% url 'auto_asignacion' %}" class="d-block mt-1">⚡ Asignación automática</a>
+
+        <!-- Gestión de Médicos -->
+        <a class="nav-link" data-bs-toggle="collapse" href="#medicosMenu" role="button" aria-expanded="false" aria-controls="medicosMenu">
+          👨‍⚕️ Gestión de Médicos
+        </a>
+        <div class="collapse ps-3" id="medicosMenu">
+          <a href="{% url 'crear_perfil_medico' %}" class="d-block mt-1">➕ Crear Perfil Médico</a>
+          <a href="{% url 'listar_medicos' %}" class="d-block mt-1">📋 Listado de Médicos</a>
+        </div>
+
+        <a href="{% url 'usuario' %}" class="d-block mt-1">🔐 Usuarios</a>
+        {% endif %}
+
+        <!-- Todos los usuarios ven esto -->
+        <a href="{% url 'buscar_pacientes' %}">📊 Reportes</a>
+      </nav>
+
+      <!-- Contenido Principal -->
+      <main class="main-content-wrapper">
+        <div class="navbar-top">
+          {% block page_title %}Sistema de Citas Médicas{% endblock %}
+          <a href="{% url 'logout' %}" class="btn-logout">Cerrar Sesión</a>
+          <span style="position: absolute; left: 25px; top: 12px">{{ request.session.username }}</span>
+        </div>
+
+        <div class="main-content">
+          {% block content %}{% endblock %}
+        </div>
+      </main>
+    </div>
+
+    <!-- Bootstrap JS para colapsables -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
