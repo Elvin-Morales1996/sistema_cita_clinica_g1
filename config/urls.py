@@ -26,6 +26,10 @@ from apps.medical.views.ver_calendario import ver_calendario
 from apps.medical.views.actualizar_medico import actualizar_medico
 from apps.medical.views.crear_cita import crear_cita
 from apps.medical.views.home import home
+from apps.medical.views.listar_pacientes import listar_pacientes
+from apps.medical.views.editar_contacto_paciente import editar_contacto_paciente
+
+
 
 from apps.medical.views.registrar_consulta import registrar_consulta
 from apps.medical.views.detalle_consulta import detalle_consulta
@@ -77,4 +81,8 @@ urlpatterns = [
     path("historial/<int:paciente_id>/", ver_historial, name="ver_historial"),
     path("historial/<int:paciente_id>/editar/", editar_historial, name="editar_historial"),
     path("historial/<int:paciente_id>/eliminar/", eliminar_historial, name="eliminar_historial"),
+
+    #Para pacientes
+    path("pacientes/listar/", listar_pacientes, name="listar_pacientes"),
+    path("pacientes/editar/<int:paciente_id>/", editar_contacto_paciente, name="editar_contacto_paciente"),
 ]

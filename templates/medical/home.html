@@ -100,18 +100,10 @@
       .card-stats:hover {
         box-shadow: 0 8px 25px rgba(245, 124, 0, 0.5);
       }
-      .bg-primary-custom {
-        background-color: var(--celeste);
-      }
-      .bg-warning-custom {
-        background-color: var(--anaranjado);
-      }
-      .bg-success-custom {
-        background-color: #4caf50;
-      }
-      .bg-danger-custom {
-        background-color: #d32f2f;
-      }
+      .bg-primary-custom { background-color: var(--celeste); }
+      .bg-warning-custom { background-color: var(--anaranjado); }
+      .bg-success-custom { background-color: #4caf50; }
+      .bg-danger-custom { background-color: #d32f2f; }
       table {
         background-color: white;
         border-radius: 12px;
@@ -124,6 +116,20 @@
       }
       tbody tr:hover {
         background-color: #fff3e0;
+      }
+      .btn-action {
+        padding: 5px 10px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: white;
+        text-decoration: none;
+      }
+      .btn-action-primary {
+        background-color: var(--anaranjado);
+      }
+      .btn-action-primary:hover {
+        background-color: #e26a00;
       }
       .main-content-wrapper {
         position: relative;
@@ -139,16 +145,27 @@
           <img src="{% static 'img/logo.jpg' %}" alt="Logo" />
         </div>
 
-        <!-- Todos los usuarios ven esto -->
-        <a href="{% url 'registrar_paciente' %}">🏥 Registro de Pacientes</a>
-        <a href="{% url 'crear_cita' %}">📅 Solicitud de Cita</a>
+        <!-- Gestión de Pacientes -->
+        <a class="nav-link" data-bs-toggle="collapse" href="#pacientesMenu"
+           role="button" aria-expanded="false" aria-controls="pacientesMenu">
+          🧑‍🤝‍🧑 Gestión de Pacientes
+        </a>
+        <div class="collapse ps-3" id="pacientesMenu">
+          <a href="{% url 'registrar_paciente' %}" class="d-block mt-1">
+            🏥 Registro de Pacientes
+          </a>
+          <a href="{% url 'listar_pacientes' %}" class="d-block mt-1">
+            📋 Listado de Pacientes
+          </a>
+        </div>
 
         <!-- Solo Administrador -->
         {% if rol_usuario == 'Administrador' %}
         <a href="{% url 'auto_asignacion' %}" class="d-block mt-1">⚡ Asignación automática</a>
 
         <!-- Gestión de Médicos -->
-        <a class="nav-link" data-bs-toggle="collapse" href="#medicosMenu" role="button" aria-expanded="false" aria-controls="medicosMenu">
+        <a class="nav-link" data-bs-toggle="collapse" href="#medicosMenu"
+           role="button" aria-expanded="false" aria-controls="medicosMenu">
           👨‍⚕️ Gestión de Médicos
         </a>
         <div class="collapse ps-3" id="medicosMenu">
@@ -159,7 +176,7 @@
         <a href="{% url 'usuario' %}" class="d-block mt-1">🔐 Usuarios</a>
         {% endif %}
 
-        <!-- Todos los usuarios ven esto -->
+        <!-- Reportes -->
         <a href="{% url 'buscar_pacientes' %}">📊 Reportes</a>
       </nav>
 
@@ -168,7 +185,9 @@
         <div class="navbar-top">
           Bienvenidos al sistema de Clínica Vital Salud
           <a href="{% url 'logout' %}" class="btn-logout">Cerrar Sesión</a>
-          <span style="position: absolute; left: 25px; top: 12px">{{ request.session.username }}</span>
+          <span style="position: absolute; left: 25px; top: 12px">
+            {{ request.session.username }}
+          </span>
         </div>
 
         <div class="main-content">
@@ -210,6 +229,7 @@
                   <th>Médico</th>
                   <th>Fecha</th>
                   <th>Hora</th>
+                  <th>Acción</th>
                 </tr>
               </thead>
               <tbody>
@@ -219,12 +239,16 @@
                   <td>{{ cita.medico.nombre }}</td>
                   <td>{{ cita.fecha }}</td>
                   <td>{{ cita.hora }}</td>
+                  <td>
+                    <a href="{% url 'registrar_consulta' cita.id %}"
+                       class="btn-action btn-action-primary">
+                      ➕ Agregar Datos
+                    </a>
+                  </td>
                 </tr>
                 {% empty %}
                 <tr>
-                  <td colspan="4" class="text-center">
-                    No hay citas programadas
-                  </td>
+                  <td colspan="5" class="text-center">No hay citas programadas</td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -234,7 +258,7 @@
       </main>
     </div>
 
-    <!-- Bootstrap JS para colapsables -->
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
