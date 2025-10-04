@@ -16,7 +16,7 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path,include
 from django.shortcuts import render  # 👈 importante para el lambda
 from apps.medical.views.login_view import login_view # 👈 importa tu vista
 from apps.medical.views.crear_perfil_medico import crear_perfil_medico
@@ -85,4 +85,7 @@ urlpatterns = [
     #Para pacientes
     path("pacientes/listar/", listar_pacientes, name="listar_pacientes"),
     path("pacientes/editar/<int:paciente_id>/", editar_contacto_paciente, name="editar_contacto_paciente"),
+
+    path("", include("apps.medical.urls")),
+
 ]

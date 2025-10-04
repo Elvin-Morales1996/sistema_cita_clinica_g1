@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Plantillas de Correo</h2>
+<a href="{% url 'crear_plantilla' %}" class="btn btn-primary mb-3">Crear Nueva Plantilla</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Clave</th>
+            <th>Nombre</th>
+            <th>Asunto</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for plantilla in plantillas %}
+        <tr>
+            <td>{{ plantilla.clave }}</td>
+            <td>{{ plantilla.nombre }}</td>
+            <td>{{ plantilla.asunto }}</td>
+            <td>
+                <a href="{% url 'editar_plantilla' plantilla.pk %}" class="btn btn-sm btn-warning">Editar</a>
+            </td>
+            <td>
+                <a href="{% url 'eliminar_plantilla' plantilla.pk %}" class="btn btn-sm btn-danger"
+                    onclick="return confirm('¿Desea eliminar esta plantilla?');">Eliminar</a>
+            </td>
+            {% empty %}
+        <tr>
+            <td colspan="4" class="text-center">No hay plantillas registradas</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
