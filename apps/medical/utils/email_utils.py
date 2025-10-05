@@ -162,7 +162,8 @@ def send_cita_notification_email(cita, subject, message_type, custom_message=Non
                 image.add_header("Content-ID", "<logo_image>")
                 email.attach(image)
 
-        email.send(fail_silently=False)
+        # ✅ Aquí está el cambio importante
+        email.send(fail_silently=True)
         return True
 
     except Exception as e:
