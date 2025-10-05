@@ -1,9 +1,8 @@
 # views/registrar_paciente.py
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.core.mail import send_mail
-from django.conf import settings
 from apps.forms_paciente import PacienteForm
+from apps.medical.utils.email_utils import send_cita_notification_email  # reutilizamos la función
 
 def registrar_paciente(request):
     if request.method == 'POST':
@@ -12,21 +11,13 @@ def registrar_paciente(request):
             paciente = form.save()  # Guardamos al paciente
             messages.success(request, '¡El registro se realizó con éxito!')
 
-            # Intentar enviar correo sin que rompa la vista
-            try:
-                send_mail(
-                    subject='Registro Exitoso',
-                    message=f'Hola {paciente.nombre} {paciente.apellido}, tu registro fue exitoso.',
-                    from_email=settings.DEFAULT_FROM_EMAIL,  # Remitente válido
-                    recipient_list=[paciente.contacto],       # Email del paciente
-                    fail_silently=False,                       # Lanzará excepción si falla
-                )
-            except Exception as e:
-                # Solo mostrar advertencia, no romper la app
-                messages.warning(request, f'No se pudo enviar el correo: {e}')
+            # Enviar notificación por correo usando la misma función que en crear_cita
+            if send_cita_notification_email(paciente, 'Registro Exitoso', 'created'):
+                messages.info(request, 'Se ha enviado una confirmación por correo electrónico.')
+            else:
+                messages.warning(request, 'El registro se realizó, pero no se pudo enviar el correo de confirmación.')
 
-            # Redirigir para limpiar el formulario
-            return redirect('registrar_paciente')
+            return redirect('registrar_paciente')  # Redirige a la misma página para limpiar el formulario
     else:
         form = PacienteForm()
 
