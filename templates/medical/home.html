@@ -282,9 +282,17 @@
                 <td>{{ cita.fecha }}</td>
                 <td>{{ cita.hora }}</td>
                 <td>
-                  <a href="{% url 'registrar_consulta' cita.id %}" class="btn-action btn-action-primary">
-                    ➕ Agregar Datos
-                  </a>
+                  <div class="d-flex flex-wrap gap-1 justify-content-center">
+                    <a href="{% url 'registrar_consulta' cita.id %}" class="btn btn-xs btn-success" title="Agregar consulta médica" style="font-size: 0.75rem; padding: 0.2rem 0.4rem;">
+                      📋 Consulta
+                    </a>
+                    <a href="{% url 'editar_cita' cita.id %}" class="btn btn-xs btn-primary" title="Modificar detalles de la cita" style="font-size: 0.75rem; padding: 0.2rem 0.4rem;">
+                      ✏️ Editar
+                    </a>
+                    <a href="{% url 'cancelar_cita' cita.id %}" class="btn btn-xs btn-danger" title="Cancelar la cita" style="font-size: 0.75rem; padding: 0.2rem 0.4rem;">
+                      ❌ Cancelar
+                    </a>
+                  </div>
                 </td>
               </tr>
               {% empty %}

@@ -43,6 +43,8 @@ from apps.medical.views.auto_asignacion import auto_asignacion
 from apps.medical.views.medicos_especialidad import medicos_especialidad
 from apps.medical.views.medicos_turno import turno_de_medico, disponibilidad_por_dia
 from apps.medical.views.historial_views import buscar_pacientes, ver_historial, editar_historial, eliminar_historial
+from apps.medical.views.editar_cita import editar_cita
+from apps.medical.views.cancelar_cita import cancelar_cita
 
 
 urlpatterns = [
@@ -60,6 +62,8 @@ urlpatterns = [
     path('medico/<int:medico_id>/calendario/', ver_calendario, name='ver_calendario_medico'),
     path('medicos/<int:medico_id>/editar/', actualizar_medico, name='actualizar_medico'),
     path('citas/crear/', crear_cita, name='crear_cita'),
+    path('citas/<int:cita_id>/editar/', editar_cita, name='editar_cita'),
+    path('citas/<int:cita_id>/cancelar/', cancelar_cita, name='cancelar_cita'),
 
     path("consultas/registrar/<int:cita_id>/", registrar_consulta, name="registrar_consulta"),
     path("consultas/<int:consulta_id>/", detalle_consulta, name="detalle_consulta"),

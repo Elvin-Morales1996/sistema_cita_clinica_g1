@@ -1,5 +1,6 @@
 # cita.py
 from django.db import models
+from django.utils import timezone
 from apps.medical.models.paciente import Paciente  # ajusta la ruta si es distinta
 from apps.medical.models.medico import Medico
 
