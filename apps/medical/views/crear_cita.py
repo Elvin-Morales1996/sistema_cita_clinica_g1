@@ -13,13 +13,18 @@ def crear_cita(request):
             # Mensaje de éxito en pantalla
             messages.success(request, '¡La cita se registró con éxito!')
 
-            # Enviar notificación por correo
-            if send_cita_notification_email(cita, 'Cita Registrada', 'created'):
-                messages.info(request, 'Se ha enviado una confirmación por correo electrónico.')
-            else:
-                messages.warning(request, 'La cita se registró, pero no se pudo enviar el correo de confirmación.')
+            # Intentar enviar correo sin romper la vista
+            try:
+                if send_cita_notification_email(cita, 'Cita Registrada', 'created'):
+                    messages.info(request, 'Se ha enviado una confirmación por correo electrónico.')
+                else:
+                    messages.warning(request, 'La cita se registró, pero no se pudo enviar el correo de confirmación.')
+            except Exception as e:
+                # Captura cualquier error del envío de correo
+                messages.warning(request, f'No se pudo enviar el correo de confirmación: {e}')
 
-            return redirect('crear_cita')  # Redirige a la misma página para limpiar el formulario
+            # Redirige a la misma página para limpiar el formulario
+            return redirect('crear_cita')
     else:
         form = CitaForm()
 

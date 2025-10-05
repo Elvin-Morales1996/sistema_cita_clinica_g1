@@ -5,9 +5,11 @@ from apps.forms_cita import CitaForm
 from apps.medical.utils.email_utils import send_cita_notification_email
 
 def editar_cita(request, cita_id):
+    # Obtener la cita o devolver 404
     cita = get_object_or_404(Cita, id=cita_id)
 
     if request.method == 'POST':
+        # Crear formulario con los datos enviados y la instancia existente
         form = CitaForm(request.POST, instance=cita)
         if form.is_valid():
             form.save()
@@ -19,8 +21,11 @@ def editar_cita(request, cita_id):
             else:
                 messages.warning(request, 'La cita se modificó, pero no se pudo enviar el correo de notificación.')
 
+            # Redirigir al home
             return redirect('home')
     else:
+        # Crear formulario con la instancia existente para mostrar los datos actuales
         form = CitaForm(instance=cita)
 
+    # Renderizar plantilla de edición
     return render(request, 'medical/editar_cita.html', {'form': form, 'cita': cita})

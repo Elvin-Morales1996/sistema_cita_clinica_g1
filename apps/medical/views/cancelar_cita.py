@@ -4,9 +4,11 @@ from apps.medical.models.cita import Cita
 from apps.medical.utils.email_utils import send_cita_notification_email
 
 def cancelar_cita(request, cita_id):
+    # Obtener la cita o devolver 404 si no existe
     cita = get_object_or_404(Cita, id=cita_id)
 
     if request.method == 'POST':
+        # Cambiar estado y guardar
         cita.estado = 'cancelada'
         cita.save()
         messages.success(request, '¡La cita ha sido cancelada con éxito!')
@@ -17,6 +19,8 @@ def cancelar_cita(request, cita_id):
         else:
             messages.warning(request, 'La cita se canceló, pero no se pudo enviar el correo de notificación.')
 
+        # Redirigir al home
         return redirect('home')
 
+    # Mostrar la plantilla de confirmación de cancelación
     return render(request, 'medical/cancelar_cita.html', {'cita': cita})
