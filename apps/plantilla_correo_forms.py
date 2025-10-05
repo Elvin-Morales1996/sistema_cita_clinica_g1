@@ -9,7 +9,7 @@ class PlantillaCorreoForm(forms.ModelForm):
             "contenido_principal": forms.Textarea(attrs={
                 "class": "form-control",
                 "rows": 6,
-                "placeholder": "Escriba el cuerpo del correo con {{nombre}}, {{fecha}}, {{medico}}, {{lugar}}"
+                "placeholder": "Escriba el cuerpo del correo con nombre, fecha, medico,lugar"
             }),
             "asunto": forms.TextInput(attrs={"class": "form-control"}),
             "nombre": forms.TextInput(attrs={"class": "form-control"}),
