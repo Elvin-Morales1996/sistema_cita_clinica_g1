@@ -2,26 +2,13 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from apps.forms_cita import CitaForm
-from apps.medical.utils.email_utils import send_cita_notification_email
 
 def crear_cita(request):
     if request.method == 'POST':
         form = CitaForm(request.POST)
         if form.is_valid():
             cita = form.save()  # Guardamos la cita
-
-            # Mensaje de éxito en pantalla
             messages.success(request, '¡La cita se registró con éxito!')
-
-            # Intentar enviar correo sin romper la vista
-            try:
-                if send_cita_notification_email(cita, 'Cita Registrada', 'created'):
-                    messages.info(request, 'Se ha enviado una confirmación por correo electrónico.')
-                else:
-                    messages.warning(request, 'La cita se registró, pero no se pudo enviar el correo de confirmación.')
-            except Exception as e:
-                # Captura cualquier error del envío de correo
-                messages.warning(request, f'No se pudo enviar el correo de confirmación: {e}')
 
             # Redirige a la misma página para limpiar el formulario
             return redirect('crear_cita')
