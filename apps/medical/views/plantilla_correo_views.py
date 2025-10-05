@@ -1,17 +1,26 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from apps.medical.models.plantilla_correo import PlantillaCorreo
-from django.contrib.auth.decorators import user_passes_test
 from apps.plantilla_correo_forms import PlantillaCorreoForm
+from functools import wraps
 
-def admin_required(view_func):
-    return user_passes_test(lambda u: u.is_authenticated and u.is_superuser)(view_func)
+# Decorador compatible con tu login basado en sesión
+def admin_required_custom(view_func):
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        # Verifica si hay sesión y si el rol es 'admin'
+        if 'rol' not in request.session or request.session['rol'] != 'Administrador':
+            return redirect('login')  # Si no es admin, va al login
+        return view_func(request, *args, **kwargs)
+    return wrapper
 
-@admin_required
+# ------------------- VISTAS -------------------
+
+@admin_required_custom
 def listar_plantillas(request):
     plantillas = PlantillaCorreo.objects.all()
     return render(request, "medical/plantilla_correo.html", {"plantillas": plantillas})
 
-@admin_required
+@admin_required_custom
 def crear_plantilla(request):
     if request.method == "POST":
         form = PlantillaCorreoForm(request.POST)
@@ -22,7 +31,7 @@ def crear_plantilla(request):
         form = PlantillaCorreoForm()
     return render(request, "medical/crear.html", {"form": form})
 
-@admin_required
+@admin_required_custom
 def editar_plantilla(request, pk):
     plantilla = get_object_or_404(PlantillaCorreo, pk=pk)
     if request.method == "POST":
@@ -34,7 +43,7 @@ def editar_plantilla(request, pk):
         form = PlantillaCorreoForm(instance=plantilla)
     return render(request, "medical/crear.html", {"form": form})  # Reusa la plantilla crear.html
 
-@admin_required
+@admin_required_custom
 def eliminar_plantilla(request, pk):
     plantilla = get_object_or_404(PlantillaCorreo, pk=pk)
     plantilla.delete()

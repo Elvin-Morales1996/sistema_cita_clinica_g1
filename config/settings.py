@@ -141,4 +141,3 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'clinicag1.notificaciones@gmail.com'
 EMAIL_HOST_PASSWORD = 'itfb ryzh hkxf uzqy'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-LOGIN_URL = '/'
