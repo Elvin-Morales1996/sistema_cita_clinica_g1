@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.hashers import check_password
 from apps.medical.models.usuario import Usuario
+from apps.audit.models import AuditLog
+from django.utils import timezone
 
 
 def login_view(request):
@@ -19,9 +21,15 @@ def login_view(request):
                 request.session['user_id'] = usuario.id
                 request.session['username'] = usuario.usuario
                 request.session['rol'] = usuario.rol
-                return redirect('home')
-            else:
-                error_message = "Usuario o contraseña incorrectos"
+                
+            AuditLog.objects.create(
+        usuario=None,  # si no está vinculado a un modelo User de Django
+        accion='login',
+        detalles=f"Inicio de sesión exitoso para el usuario '{usuario.usuario}' a las {timezone.now()}."
+    )
+            return redirect('home')
+    else:
+            error_message = "Usuario o contraseña incorrectos"
 
     return render(request, 'medical/login.html', {'error': error_message})
 

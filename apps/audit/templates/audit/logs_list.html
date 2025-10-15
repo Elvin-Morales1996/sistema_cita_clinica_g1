@@ -1,0 +1,83 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Logs de Actividad</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #f4f7fb; font-family: 'Segoe UI', Tahoma, sans-serif;}
+    .card { margin-top: 30px; border-radius:12px; }
+    .filter-row { gap:10px; display:flex; flex-wrap:wrap;}
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card p-4">
+    <h3>Logs de Actividad</h3>
+
+    <form method="get" class="mb-3">
+      <div class="filter-row">
+        <div>
+          <label>Desde</label>
+          {{ form.start_date }}
+        </div>
+        <div>
+          <label>Hasta</label>
+          {{ form.end_date }}
+        </div>
+        <div>
+          <label>Usuario</label>
+          {{ form.user }}
+        </div>
+        <div>
+          <label>Acción</label>
+          {{ form.action }}
+        </div>
+        <div style="align-self:flex-end;">
+          <button class="btn btn-primary">Filtrar</button>
+          <a href="{% url 'audit_logs_list' %}" class="btn btn-secondary">Limpiar</a>
+        </div>
+      </div>
+    </form>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Usuario</th>
+          <th>Acción</th>
+          <th>IP</th>
+          <th>Detalles</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+          <tr>
+            <td>{{ log.created_at|date:"Y-m-d H:i:s" }}</td>
+            <td>{{ log.user }}</td>
+            <td>{{ log.action }}</td>
+            <td>{{ log.ip }}</td>
+            <td><a href="{% url 'audit_log_detail' log.id %}">Ver</a></td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5">No hay registros.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <nav>
+      <ul class="pagination">
+        {% if logs.has_previous %}
+          <li class="page-item"><a class="page-link" href="?page={{ logs.previous_page_number }}">Anterior</a></li>
+        {% endif %}
+        <li class="page-item disabled"><span class="page-link">Página {{ logs.number }} de {{ logs.paginator.num_pages }}</span></li>
+        {% if logs.has_next %}
+          <li class="page-item"><a class="page-link" href="?page={{ logs.next_page_number }}">Siguiente</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</div>
+</body>
+</html>

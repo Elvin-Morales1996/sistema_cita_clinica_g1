@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps.medical',
+    'apps.audit',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "apps.audit.middleware.LogActivityMiddleware",
+    
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -84,6 +87,9 @@ DATABASES = {
         'PASSWORD': '0qzMm1rh1R36S8PFnhUp8QznHA96kX4L',
         'HOST': 'dpg-d33fsi6mcj7s73abuo1g-a.oregon-postgres.render.com',
         'PORT': '5432',
+        'OPTIONS': {
+            'sslmode': 'require',  
+        },
     }
 }
 
@@ -111,9 +117,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-sv'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/El_Salvador'
 
 USE_I18N = True
 
@@ -141,3 +147,4 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'clinicag1.notificaciones@gmail.com'
 EMAIL_HOST_PASSWORD = 'itfb ryzh hkxf uzqy'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+

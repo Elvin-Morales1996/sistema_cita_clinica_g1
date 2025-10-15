@@ -31,6 +31,7 @@ from apps.medical.views.editar_contacto_paciente import editar_contacto_paciente
 
 
 
+
 from apps.medical.views.registrar_consulta import registrar_consulta
 from apps.medical.views.detalle_consulta import detalle_consulta
 
@@ -91,5 +92,9 @@ urlpatterns = [
     path("pacientes/editar/<int:paciente_id>/", editar_contacto_paciente, name="editar_contacto_paciente"),
 
     path("", include("apps.medical.urls")),
+    
+    
+    path("audit/", include("apps.audit.urls")),
+
 
 ]
