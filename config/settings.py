@@ -81,15 +81,8 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'sistema_cita_clinica_db',
-        'USER': 'sistema_cita_clinica_db_user',
-        'PASSWORD': '0qzMm1rh1R36S8PFnhUp8QznHA96kX4L',
-        'HOST': 'dpg-d33fsi6mcj7s73abuo1g-a.oregon-postgres.render.com',
-        'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'require',  
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

@@ -23,7 +23,7 @@ def login_view(request):
                 request.session['rol'] = usuario.rol
                 
             AuditLog.objects.create(
-        usuario=None,  # si no está vinculado a un modelo User de Django
+        usuario=None,  
         accion='login',
         detalles=f"Inicio de sesión exitoso para el usuario '{usuario.usuario}' a las {timezone.now()}."
     )
@@ -35,5 +35,5 @@ def login_view(request):
 
 
 def logout_view(request):
-    request.session.flush()  # ✅ cierra la sesión
+    request.session.flush()  
     return redirect('login')

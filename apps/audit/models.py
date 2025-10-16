@@ -47,7 +47,7 @@ class AuditLog(models.Model):
         ('logout', 'Cierre de sesión'),
     ]
 
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)  # 👈 ahora puede ser vacío
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)  
     accion = models.CharField(max_length=50, choices=ACTION_CHOICES)
     detalles = models.TextField(blank=True, null=True)
     fecha_hora = models.DateTimeField(auto_now_add=True)
