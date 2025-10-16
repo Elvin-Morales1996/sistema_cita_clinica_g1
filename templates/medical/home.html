@@ -194,7 +194,7 @@
       </div>
 
       <!-- Solo Administrador -->
-      {% if rol_usuario == 'Administrador' %}
+      {% if rol_usuario == 'admin' %}
       <a href="{% url 'auto_asignacion' %}" class="d-block mt-1">⚡ Asignación automática</a>
       <a class="nav-link" data-bs-toggle="collapse" href="#plantillasMenu" role="button" aria-expanded="false"
         aria-controls="plantillasMenu">
