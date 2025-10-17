@@ -25,6 +25,7 @@ from apps.medical.views.ver_medico import listar_medicos
 from apps.medical.views.ver_calendario import ver_calendario
 from apps.medical.views.actualizar_medico import actualizar_medico
 from apps.medical.views.crear_cita import crear_cita
+from apps.medical.views.reprogramar_cita import reprogramar_cita
 from apps.medical.views.home import home
 from apps.medical.views.listar_pacientes import listar_pacientes
 from apps.medical.views.editar_contacto_paciente import editar_contacto_paciente
@@ -66,6 +67,7 @@ urlpatterns = [
     path('citas/crear/', crear_cita, name='crear_cita'),
     path('citas/<int:cita_id>/editar/', editar_cita, name='editar_cita'),
     path('citas/<int:cita_id>/cancelar/', cancelar_cita, name='cancelar_cita'),
+    path("citas/<int:pk>/reprogramar/", reprogramar_cita, name="reprogramar_cita"),
 
     path("consultas/registrar/<int:cita_id>/", registrar_consulta, name="registrar_consulta"),
     path("consultas/<int:consulta_id>/", detalle_consulta, name="detalle_consulta"),

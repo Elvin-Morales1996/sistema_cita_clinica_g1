@@ -289,6 +289,10 @@
                     <a href="{% url 'editar_cita' cita.id %}" class="btn btn-xs btn-primary" title="Modificar detalles de la cita" style="font-size: 0.75rem; padding: 0.2rem 0.4rem;">
                       ✏️ Editar
                     </a>
+                    <!-- 🔁 NUEVO: Botón Reprogramar -->
+                    <a href="{% url 'reprogramar_cita' cita.id %}" class="btn btn-xs btn-warning" title="Reprogramar la cita" style="font-size: 0.75rem; padding: 0.2rem 0.4rem;">
+                      🔁 Reprogramar
+                    </a>
                     <a href="{% url 'cancelar_cita' cita.id %}" class="btn btn-xs btn-danger" title="Cancelar la cita" style="font-size: 0.75rem; padding: 0.2rem 0.4rem;">
                       ❌ Cancelar
                     </a>
