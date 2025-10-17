@@ -46,6 +46,7 @@ from apps.medical.views.medicos_turno import turno_de_medico, disponibilidad_por
 from apps.medical.views.historial_views import buscar_pacientes, ver_historial, editar_historial, eliminar_historial
 from apps.medical.views.editar_cita import editar_cita
 from apps.medical.views.cancelar_cita import cancelar_cita
+from apps.medical.views.citas_pendientes import citas_pendientes, confirmar_cita, cancelar_cita
 
 
 urlpatterns = [
@@ -90,6 +91,14 @@ urlpatterns = [
     #Para pacientes
     path("pacientes/listar/", listar_pacientes, name="listar_pacientes"),
     path("pacientes/editar/<int:paciente_id>/", editar_contacto_paciente, name="editar_contacto_paciente"),
+    
+    
+    #Para citas pendientes
+    path('citas/pendientes/', citas_pendientes, name='citas_pendientes'),
+    path('citas/confirmar/<int:cita_id>/', confirmar_cita, name='confirmar_cita'),
+    path('citas/cancelar/<int:cita_id>/', cancelar_cita, name='cancelar_cita'),
+    
+    
 
     path("", include("apps.medical.urls")),
     
