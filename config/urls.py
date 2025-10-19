@@ -45,6 +45,7 @@ from apps.medical.views.auto_asignacion import auto_asignacion
 from apps.medical.views.medicos_especialidad import medicos_especialidad
 from apps.medical.views.medicos_turno import turno_de_medico, disponibilidad_por_dia
 from apps.medical.views.historial_views import buscar_pacientes, ver_historial, editar_historial, eliminar_historial
+from apps.medical.views.audit_logs import audit_logs_view
 from apps.medical.views.editar_cita import editar_cita
 from apps.medical.views.cancelar_cita import cancelar_cita
 from apps.medical.views.citas_pendientes import citas_pendientes, confirmar_cita, cancelar_cita
@@ -89,6 +90,9 @@ urlpatterns = [
     path("historial/<int:paciente_id>/", ver_historial, name="ver_historial"),
     path("historial/<int:paciente_id>/editar/", editar_historial, name="editar_historial"),
     path("historial/<int:paciente_id>/eliminar/", eliminar_historial, name="eliminar_historial"),
+
+    # Auditoría de usuarios
+    path("audit/logs/", audit_logs_view, name="audit_logs"),
 
     #Para pacientes
     path("pacientes/listar/", listar_pacientes, name="listar_pacientes"),

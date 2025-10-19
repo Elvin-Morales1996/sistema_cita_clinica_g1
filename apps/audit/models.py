@@ -45,9 +45,13 @@ class AuditLog(models.Model):
     ACTION_CHOICES = [
         ('login', 'Inicio de sesión'),
         ('logout', 'Cierre de sesión'),
+        ('role_change', 'Cambio de rol'),
+        ('user_creation', 'Creación de usuario'),
+        ('user_deletion', 'Eliminación de usuario'),
+        ('user_update', 'Actualización de usuario'),
     ]
 
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)  
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     accion = models.CharField(max_length=50, choices=ACTION_CHOICES)
     detalles = models.TextField(blank=True, null=True)
     fecha_hora = models.DateTimeField(auto_now_add=True)
