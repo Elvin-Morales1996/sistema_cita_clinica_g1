@@ -1,10 +1,10 @@
-from django.db import models
+from django.db import models 
 from django.conf import settings
 from django.utils import timezone
-from apps.medical.models.usuario import Usuario  
+from django.contrib.auth.models import User
+
 
 class ActivityLog(models.Model):
-   
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -12,7 +12,7 @@ class ActivityLog(models.Model):
         blank=True,
         related_name="activity_logs"
     )
-    action = models.CharField(max_length=255)   
+    action = models.CharField(max_length=255)
     details = models.TextField(blank=True, null=True)
     ip = models.GenericIPAddressField(blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now, db_index=True)
@@ -28,9 +28,6 @@ class ActivityLog(models.Model):
 
 
 class AlertRule(models.Model):
-    """
-    Reglas básicas para alertas: por ejemplo detectar N intentos fallidos en X minutos.
-    """
     name = models.CharField(max_length=150)
     action = models.CharField(max_length=150, help_text="Nombre de la acción a vigilar (ej. login_failed)")
     threshold = models.IntegerField(help_text="Número de eventos para disparar alerta")
@@ -40,18 +37,15 @@ class AlertRule(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.action})"
-    
+
+
 class AuditLog(models.Model):
     ACTION_CHOICES = [
         ('login', 'Inicio de sesión'),
         ('logout', 'Cierre de sesión'),
-        ('role_change', 'Cambio de rol'),
-        ('user_creation', 'Creación de usuario'),
-        ('user_deletion', 'Eliminación de usuario'),
-        ('user_update', 'Actualización de usuario'),
     ]
 
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)  
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     accion = models.CharField(max_length=50, choices=ACTION_CHOICES)
     detalles = models.TextField(blank=True, null=True)
     fecha_hora = models.DateTimeField(auto_now_add=True)

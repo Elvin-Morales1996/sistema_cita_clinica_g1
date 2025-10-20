@@ -1,4 +1,4 @@
-from .models import ActivityLog
+from apps.audit.models import ActivityLog
 from django.utils.deprecation import MiddlewareMixin
 
 class LogActivityMiddleware(MiddlewareMixin):
@@ -7,14 +7,14 @@ class LogActivityMiddleware(MiddlewareMixin):
     como una acción general. Ajusta según necesidades.
     """
     def process_request(self, request):
-        # no bloquear request; guardar en process_response
+        
         return None
 
     def process_response(self, request, response):
         try:
             if request.method in ("POST", "DELETE", "PUT", "PATCH"):
                 user = getattr(request, "user", None)
-                # evita loguear assets u admin estático o health checks
+                
                 path = request.path.lower()
                 if "/static/" in path or path.startswith("/health"):
                     return response
@@ -27,6 +27,6 @@ class LogActivityMiddleware(MiddlewareMixin):
                                            ip=ip,
                                            details=details)
         except Exception:
-            # Nunca romper la respuesta si falla el log
+            
             pass
         return response
