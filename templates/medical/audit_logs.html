@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Historial de Auditoría - Gestión de Usuarios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff6600 0%, #00aaff 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 3px solid #00aaff;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        h2 {
+            color: #ff6600;
+            font-weight: 800;
+            margin-bottom: 25px;
+            text-align: center;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+        }
+
+        thead {
+            background: linear-gradient(45deg, #00aaff, #0077cc);
+            color: white;
+        }
+
+        tbody tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        .btn-volver {
+            display: block;
+            margin: 30px auto 0 auto;
+            background-color: #222222;
+            color: white;
+            padding: 10px 30px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-volver:hover {
+            background-color: #555555;
+        }
+
+        .action-badge {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-creation {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .badge-change {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .badge-deletion {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .badge-update {
+            background-color: #17a2b8;
+            color: white;
+        }
+
+        .no-logs {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="table-container">
+        <h2>📋 Historial de Auditoría - Gestión de Usuarios</h2>
+
+        {% if audit_logs %}
+        <table class="table table-striped table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th>👤 Administrador</th>
+                    <th>🎯 Acción</th>
+                    <th>👨‍💼 Usuario Afectado</th>
+                    <th>🛡️ Rol Asignado</th>
+                    <th>📝 Detalles</th>
+                    <th>📅 Fecha y Hora</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in audit_logs %}
+                <tr>
+                    <td>
+                        {% if log.usuario %}
+                            {{ log.usuario.username }}
+                        {% else %}
+                            <em>Sistema</em>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.accion == 'user_creation' %}
+                            <span class="action-badge badge-creation">➕ Creación</span>
+                        {% elif log.accion == 'role_change' %}
+                            <span class="action-badge badge-change">🔄 Cambio de Rol</span>
+                        {% elif log.accion == 'user_deletion' %}
+                            <span class="action-badge badge-deletion">🗑️ Eliminación</span>
+                        {% elif log.accion == 'user_update' %}
+                            <span class="action-badge badge-update">✏️ Actualización</span>
+                        {% else %}
+                            <span class="action-badge">{{ log.get_accion_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.accion == 'user_creation' %}
+                            {% if "'usuario'" in log.detalles %}
+                                {{ log.detalles|slice:"9:"|slice:":-1"|default:"N/A" }}
+                            {% else %}
+                                <em>N/A</em>
+                            {% endif %}
+                        {% elif log.accion == 'role_change' %}
+                            {% if "'usuario'" in log.detalles %}
+                                {{ log.detalles|slice:"9:"|slice:":-1"|default:"N/A" }}
+                            {% else %}
+                                <em>N/A</em>
+                            {% endif %}
+                        {% elif log.accion == 'user_deletion' %}
+                            {% if "'usuario'" in log.detalles %}
+                                {{ log.detalles|slice:"9:"|slice:":-1"|default:"N/A" }}
+                            {% else %}
+                                <em>N/A</em>
+                            {% endif %}
+                        {% else %}
+                            <em>N/A</em>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.accion == 'user_creation' %}
+                            {% if 'Administrador' in log.detalles %}Administrador{% endif %}
+                            {% if 'Médico' in log.detalles %}Médico{% endif %}
+                            {% if 'Recepcionista' in log.detalles %}Recepcionista{% endif %}
+                            {% if 'Paciente' in log.detalles %}Paciente{% endif %}
+                        {% elif log.accion == 'role_change' %}
+                            {% if '-> Administrador' in log.detalles %}Administrador{% endif %}
+                            {% if '-> Médico' in log.detalles %}Médico{% endif %}
+                            {% if '-> Recepcionista' in log.detalles %}Recepcionista{% endif %}
+                            {% if '-> Paciente' in log.detalles %}Paciente{% endif %}
+                        {% else %}
+                            <em>N/A</em>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if log.accion == 'user_creation' %}
+                            Usuario {{ log.usuario.username|default:"Sistema" }} creó al usuario {% if "'usuario'" in log.detalles %}{{ log.detalles|slice:"9:"|slice:":-1"|default:"N/A" }}{% endif %} con rol {% if 'Administrador' in log.detalles %}Administrador{% endif %}{% if 'Médico' in log.detalles %}Médico{% endif %}{% if 'Recepcionista' in log.detalles %}Recepcionista{% endif %}{% if 'Paciente' in log.detalles %}Paciente{% endif %}
+                        {% elif log.accion == 'role_change' %}
+                            Usuario {{ log.usuario.username|default:"Sistema" }} cambió el rol {% if 'Paciente ->' in log.detalles %}Paciente{% endif %}{% if 'Recepcionista ->' in log.detalles %}Recepcionista{% endif %}{% if 'Médico ->' in log.detalles %}Médico{% endif %}{% if 'Administrador ->' in log.detalles %}Administrador{% endif %} a {% if '-> Administrador' in log.detalles %}Administrador{% endif %}{% if '-> Médico' in log.detalles %}Médico{% endif %}{% if '-> Recepcionista' in log.detalles %}Recepcionista{% endif %}{% if '-> Paciente' in log.detalles %}Paciente{% endif %} del usuario {% if "'usuario'" in log.detalles %}{{ log.detalles|slice:"9:"|slice:":-1"|default:"N/A" }}{% endif %}
+                        {% elif log.accion == 'user_deletion' %}
+                            Usuario {{ log.usuario.username|default:"Sistema" }} eliminó al usuario {% if "'usuario'" in log.detalles %}{{ log.detalles|slice:"9:"|slice:":-1"|default:"N/A" }}{% endif %} que tenía rol {% if 'Administrador' in log.detalles %}Administrador{% endif %}{% if 'Médico' in log.detalles %}Médico{% endif %}{% if 'Recepcionista' in log.detalles %}Recepcionista{% endif %}{% if 'Paciente' in log.detalles %}Paciente{% endif %}
+                        {% elif log.accion == 'user_update' %}
+                            Usuario {{ log.usuario.username|default:"Sistema" }} actualizó la información del usuario {% if "'usuario'" in log.detalles %}{{ log.detalles|slice:"9:"|slice:":-1"|default:"N/A" }}{% endif %}
+                        {% else %}
+                            {{ log.detalles|truncatechars:100 }}
+                        {% endif %}
+                    </td>
+                    <td>{{ log.fecha_hora|date:"d/m/Y H:i:s" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="no-logs">
+            <h4>📝 No hay registros de auditoría</h4>
+            <p>Aún no se han realizado cambios en usuarios o roles.</p>
+        </div>
+        {% endif %}
+
+        <a href="{% url 'usuario' %}" class="btn-volver">⬅ Volver a Gestión de Usuarios</a>
+    </div>
+</body>
+</html>

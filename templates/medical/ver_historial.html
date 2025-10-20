@@ -140,10 +140,12 @@
             </div>
         </div>
 
+        {% if puede_editar %}
         <div class="text-center mb-4">
             <a href="{% url 'editar_historial' paciente.id %}" class="btn-action btn-edit">Editar Historial</a>
             <a href="{% url 'eliminar_historial' paciente.id %}" class="btn-action btn-delete">Eliminar Historial</a>
         </div>
+        {% endif %}
 
         <h3>🏥 Consultas Médicas</h3>
         <table class="table table-striped table-bordered">

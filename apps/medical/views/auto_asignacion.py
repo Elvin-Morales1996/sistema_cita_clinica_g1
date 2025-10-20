@@ -6,7 +6,9 @@ from apps.forms_medico import SolicitudAutoCitaForm
 from apps.medical.services.auto_asignacion import primera_cita_disponible
 from apps.medical.models.cita import Cita
 from apps.medical.models.paciente import Paciente
+from apps.core.services.auth_service import require_role
 
+@require_role(['Administrador', 'Médico', 'Recepcionista'])
 @require_http_methods(["GET", "POST"])
 def auto_asignacion(request):
     # NO bloquees aquí; deja que cualquiera vea el formulario y busque.

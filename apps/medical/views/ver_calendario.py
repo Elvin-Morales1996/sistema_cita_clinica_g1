@@ -1,15 +1,33 @@
 from django.shortcuts import render, get_object_or_404
 from datetime import date
 import calendar
+from django.http import JsonResponse
 from apps.medical.models.medico import Medico
+from apps.medical.models.Disponibilidad import DiaNoDisponible
 
 MESES = [
     '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
 ]
+
+FESTIVOS = [
+    (1, 1), (17, 4), (18, 4), (19, 4), (1, 5), (10, 5),
+    (17, 6), (6, 8), (3, 8), (5, 8), (15, 9), (2, 11), (25, 12)
+]
+
 def ver_calendario(request, medico_id):
     medico = get_object_or_404(Medico, id=medico_id)
 
+    # POST para guardar día no disponible
+    if request.method == "POST":
+        dia = int(request.POST.get("dia"))
+        mes = int(request.POST.get("mes"))
+        año = int(request.POST.get("año"))
+        fecha_obj = date(año, mes, dia)
+        DiaNoDisponible.objects.get_or_create(medico=medico, fecha=fecha_obj)
+        return JsonResponse({"status": "ok"})
+
+    # GET para mostrar calendario
     mes = int(request.GET.get('mes', date.today().month))
     año = int(request.GET.get('año', date.today().year))
 
@@ -20,6 +38,9 @@ def ver_calendario(request, medico_id):
     año_siguiente = año if mes < 12 else año + 1
 
     dias_laborales = dias_laborales_por_turno(medico.horario)
+
+    dias_no_disponibles = medico.dias_no_disponibles.filter(fecha__year=año, fecha__month=mes)
+    dias_no_disponibles_set = set(d.fecha.day for d in dias_no_disponibles)
 
     cal = calendar.Calendar()
     semanas = cal.monthdays2calendar(año, mes)
@@ -35,8 +56,15 @@ def ver_calendario(request, medico_id):
             if dia == 0:
                 calendario_html += "<td></td>"
             else:
-                clase = "dia-laboral" if dia_semana in dias_laborales else ""
-                calendario_html += f"<td class='{clase}'>{dia}</td>"
+                if (dia, mes) in FESTIVOS:
+                    clase_str = "dia-festivo"
+                elif dia in dias_no_disponibles_set:
+                    clase_str = "dia-no-disponible"
+                elif dia_semana in dias_laborales:
+                    clase_str = "dia-laboral"
+                else:
+                    clase_str = ""
+                calendario_html += f"<td class='{clase_str}' data-dia='{dia}'>{dia}</td>"
         calendario_html += "</tr>"
     calendario_html += "</tbody></table>"
 
@@ -51,9 +79,11 @@ def ver_calendario(request, medico_id):
         'nombre_mes': MESES[mes],
         'calendario': calendario_html,
     })
+
+
 def dias_laborales_por_turno(turno):
     if turno == 'turno_dia_1':
-        return [0, 1, 2, 3, 4]  # Lunes a Viernes (0 = lunes)
+        return [0, 1, 2, 3, 4]  # Lunes a Viernes
     elif turno == 'turno_dia_2':
         return [1, 2, 3, 4, 5]  # Martes a Sábado
     elif turno == 'turno_noche_1':

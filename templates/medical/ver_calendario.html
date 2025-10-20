@@ -22,89 +22,30 @@
             margin: auto;
         }
 
-        h2 {
-            color: #ff6600;
-            font-weight: 800;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        h3 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #0077cc;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
+        h2 { color: #ff6600; font-weight: 800; text-align: center; margin-bottom: 10px; }
+        h3 { text-align: center; margin-bottom: 20px; color: #0077cc; }
+        .controls { display: flex; justify-content: space-between; margin-bottom: 20px; }
         .controls a.button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: bold;
+            background-color: #007bff; color: white; padding: 10px 20px;
+            text-decoration: none; border-radius: 10px; font-weight: bold;
         }
+        .controls a.button:hover { background-color: #0056b3; }
+        .calendar { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; cursor: pointer; }
+        th { background-color: #00aaff; color: white; }
+        td { background-color: #f9f9f9; }
 
-        .controls a.button:hover {
-            background-color: #0056b3;
-        }
+        .dia-laboral { background-color: #d4fcd4; color: #006600; font-weight: bold; border: 2px solid #66cc66; border-radius: 6px; }
+        .dia-festivo { background-color: #f8d7da; color: #a71d2a; font-weight: bold; border: 2px solid #d9534f; border-radius: 6px; }
+        .dia-no-disponible { background-color: #fff3cd; color: #856404; font-weight: bold; border: 2px solid #ffc107; border-radius: 6px; }
+        .dia-especial { background-color: #f08080 !important; color: white !important; font-weight: bold; border: 2px solid #ff0000; border-radius: 6px; }
 
-        .calendar {
-            overflow-x: auto;
+        .btn-volver { display: block; margin: 30px auto 0 auto; background-color: #222222; color: white;
+            padding: 10px 30px; border: none; border-radius: 10px; font-weight: 600;
+            transition: background-color 0.3s ease; text-align: center; text-decoration: none; width: max-content;
         }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        th, td {
-            border: 1px solid #ccc;
-            padding: 10px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #00aaff;
-            color: white;
-        }
-
-        td {
-            background-color: #f9f9f9;
-        }
-
-        /* Aquí resaltamos los días laborales en verde */
-        .dia-laboral {
-            background-color: #d4fcd4; /* verde claro */
-            color: #006600;
-            font-weight: bold;
-            border: 2px solid #66cc66;
-            border-radius: 6px;
-        }
-
-        .btn-volver {
-            display: block;
-            margin: 30px auto 0 auto;
-            background-color: #222222;
-            color: white;
-            padding: 10px 30px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-            text-align: center;
-            text-decoration: none;
-            width: max-content;
-        }
-
-        .btn-volver:hover {
-            background-color: #555555;
-        }
+        .btn-volver:hover { background-color: #555555; }
     </style>
 </head>
 <body>
@@ -123,5 +64,38 @@
 
         <a href="{% url 'listar_medicos' %}" class="btn-volver">⬅ Volver a la Lista de Médicos</a>
     </div>
+
+    <!-- Script para guardar días no disponibles -->
+    <script>
+        const mes = "{{ mes }}";
+        const año = "{{ año }}";
+
+        document.querySelectorAll("td").forEach(td => {
+            td.addEventListener("click", () => {
+                const dia = td.getAttribute("data-dia");
+                if (!dia) return;  // Ignorar celdas vacías
+
+                fetch("", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `dia=${dia}&mes=${mes}&año=${año}`
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "ok") {
+                        // Alternar día no disponible
+                        if(td.classList.contains("dia-no-disponible")) {
+                            td.classList.remove("dia-no-disponible");
+                        } else {
+                            td.classList.add("dia-no-disponible");
+                        }
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

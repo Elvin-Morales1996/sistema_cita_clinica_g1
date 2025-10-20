@@ -85,10 +85,13 @@
     <div class="table-container">
       <h2>📋 Lista de Usuarios</h2>
 
-      <!-- Botón Agregar -->
+      <!-- Botones de Acción -->
       <div class="mb-3 text-end">
         <a href="{% url 'crear_usuario' %}" class="btn-agregar"
           >➕ Agregar Usuario</a
+        >
+        <a href="{% url 'audit_logs' %}" class="btn-agregar"
+          >📋 Ver Historial de Cambios</a
         >
       </div>
 

@@ -25,6 +25,7 @@ from apps.medical.views.ver_medico import listar_medicos
 from apps.medical.views.ver_calendario import ver_calendario
 from apps.medical.views.actualizar_medico import actualizar_medico
 from apps.medical.views.crear_cita import crear_cita
+from apps.medical.views.reprogramar_cita import reprogramar_cita
 from apps.medical.views.home import home
 from apps.medical.views.listar_pacientes import listar_pacientes
 from apps.medical.views.editar_contacto_paciente import editar_contacto_paciente
@@ -44,6 +45,7 @@ from apps.medical.views.auto_asignacion import auto_asignacion
 from apps.medical.views.medicos_especialidad import medicos_especialidad
 from apps.medical.views.medicos_turno import turno_de_medico, disponibilidad_por_dia
 from apps.medical.views.historial_views import buscar_pacientes, ver_historial, editar_historial, eliminar_historial
+from apps.medical.views.audit_logs import audit_logs_view
 from apps.medical.views.editar_cita import editar_cita
 from apps.medical.views.cancelar_cita import cancelar_cita
 from apps.medical.views.citas_pendientes import citas_pendientes, confirmar_cita, cancelar_cita
@@ -66,6 +68,7 @@ urlpatterns = [
     path('citas/crear/', crear_cita, name='crear_cita'),
     path('citas/<int:cita_id>/editar/', editar_cita, name='editar_cita'),
     path('citas/<int:cita_id>/cancelar/', cancelar_cita, name='cancelar_cita'),
+    path("citas/<int:pk>/reprogramar/", reprogramar_cita, name="reprogramar_cita"),
 
     path("consultas/registrar/<int:cita_id>/", registrar_consulta, name="registrar_consulta"),
     path("consultas/<int:consulta_id>/", detalle_consulta, name="detalle_consulta"),
@@ -87,6 +90,9 @@ urlpatterns = [
     path("historial/<int:paciente_id>/", ver_historial, name="ver_historial"),
     path("historial/<int:paciente_id>/editar/", editar_historial, name="editar_historial"),
     path("historial/<int:paciente_id>/eliminar/", eliminar_historial, name="eliminar_historial"),
+
+    # Auditoría de usuarios
+    path("audit/logs/", audit_logs_view, name="audit_logs"),
 
     #Para pacientes
     path("pacientes/listar/", listar_pacientes, name="listar_pacientes"),

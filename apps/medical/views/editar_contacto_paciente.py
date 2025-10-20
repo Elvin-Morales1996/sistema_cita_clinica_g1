@@ -1,7 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from apps.medical.models.paciente import Paciente
 from apps.pacienteContactoForm import PacienteContactoForm
+from apps.core.services.auth_service import require_role
 
+@require_role(['Administrador', 'Médico', 'Recepcionista'])
 def editar_contacto_paciente(request, paciente_id):
     paciente = get_object_or_404(Paciente, id=paciente_id)
 

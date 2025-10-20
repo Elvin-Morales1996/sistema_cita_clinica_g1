@@ -3,7 +3,9 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from apps.forms_paciente import PacienteForm
 from apps.medical.utils.email_utils import send_cita_notification_email  # reutilizamos la función
+from apps.core.services.auth_service import require_role
 
+@require_role(['Administrador', 'Médico', 'Recepcionista'])
 def registrar_paciente(request):
     if request.method == 'POST':
         form = PacienteForm(request.POST)
