@@ -1,10 +1,10 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from django.contrib.auth.models import User
+from apps.medical.models.usuario import Usuario  
 
 class ActivityLog(models.Model):
-    # referenciamos al user model actual
+   
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,
@@ -12,7 +12,7 @@ class ActivityLog(models.Model):
         blank=True,
         related_name="activity_logs"
     )
-    action = models.CharField(max_length=255)   # ej. 'login_failed', 'create_patient'
+    action = models.CharField(max_length=255)   
     details = models.TextField(blank=True, null=True)
     ip = models.GenericIPAddressField(blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now, db_index=True)
@@ -47,7 +47,7 @@ class AuditLog(models.Model):
         ('logout', 'Cierre de sesión'),
     ]
 
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)  
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)  
     accion = models.CharField(max_length=50, choices=ACTION_CHOICES)
     detalles = models.TextField(blank=True, null=True)
     fecha_hora = models.DateTimeField(auto_now_add=True)
