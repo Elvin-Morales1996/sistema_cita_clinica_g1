@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('audit', '0004_alter_auditlog_usuario'),
-        ('medical', '0014_cita_estado_alter_cita_fecha_actualizacion_and_more'),
+        ('medical', '0003_dianodisponible'), 
     ]
 
     operations = [

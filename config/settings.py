@@ -162,3 +162,7 @@ EMAIL_HOST_USER = 'clinicag1.notificaciones@gmail.com'
 EMAIL_HOST_PASSWORD = 'itfb ryzh hkxf uzqy'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+LOGIN_URL = '/login/'          # a dónde redirigir cuando no ha iniciado sesión
+LOGIN_REDIRECT_URL = '/home/'  # a dónde ir después de iniciar sesión
+LOGOUT_REDIRECT_URL = '/'      # opcional
+

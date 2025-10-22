@@ -17,24 +17,24 @@
       }
       .table-container {
         margin: 2rem auto;
-        max-width: 900px;
-        background-color: white;
+        max-width: 1000px;
+        background-color: #fff;
         border-radius: 12px;
         box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
         padding: 2rem;
       }
       .table td.clave-col {
-        max-width: 200px; /* 👈 puedes ajustar el tamaño */
-        white-space: nowrap; /* evita que el texto se divida en varias líneas */
-        overflow: hidden; /* oculta lo que se sale del ancho */
-        text-overflow: ellipsis; /* agrega "..." al final */
-        font-size: 0.85rem; /* un poco más pequeño */
+        max-width: 200px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 0.85rem;
       }
       h2 {
         margin-bottom: 1.5rem;
         font-weight: 700;
         text-align: center;
-        color: #f57c00; /* mismo naranja */
+        color: #f57c00;
       }
       thead {
         background-color: #f5f5f5;
@@ -43,29 +43,33 @@
       tbody tr:hover {
         background-color: #fff3e0;
       }
-      .btn-accion {
-        margin-right: 5px;
+
+      /* Fila apagada cuando está inactivo */
+      .inactive-row {
+        background-color: #f7f7f7 !important;
       }
+      .inactive-row td,
+      .inactive-row th {
+        color: #888 !important;
+      }
+
       .btn-agregar {
         background-color: #4caf50;
-        color: white;
+        color: #fff;
         font-weight: 600;
+        border-radius: 0.375rem;
+        padding: 0.5rem 0.75rem;
+        text-decoration: none;
       }
       .btn-agregar:hover {
         background-color: #388e3c;
+        color: #fff;
       }
-      .btn-editar {
-        background-color: #4caf50;
-        color: white;
-      }
-      .btn-eliminar {
-        background-color: #d32f2f;
-        color: white;
-      }
+
       .volver-inicio {
         margin-top: 20px;
         background-color: #000;
-        color: white;
+        color: #fff;
         font-weight: 600;
         border: none;
         padding: 10px 20px;
@@ -76,21 +80,21 @@
       }
       .volver-inicio:hover {
         background-color: #333;
-        color: white;
+        color: #fff;
       }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
+
   <body>
     <div class="table-container">
       <h2>📋 Lista de Usuarios</h2>
 
-      <!-- Botones de Acción -->
       <div class="mb-3 text-end">
         <a href="{% url 'crear_usuario' %}" class="btn-agregar"
           >➕ Agregar Usuario</a
         >
-        <a href="{% url 'audit_logs' %}" class="btn-agregar"
+        <a href="{% url 'audit:audit_logs' %}" class="btn-agregar"
           >📋 Ver Historial de Cambios</a
         >
       </div>
@@ -104,17 +108,66 @@
             <th>👤 Usuario</th>
             <th>🔑 Clave</th>
             <th>🛡️ Rol</th>
+            <th>📌 Estado</th>
             <th>⚙️ Acciones</th>
           </tr>
         </thead>
         <tbody>
-          {% if usuarios %} {% for u in usuarios %}
-          <tr>
+          {% for u in usuarios %}
+          <tr class="{% if u.estado != 'A' %}inactive-row{% endif %}">
             <td>{{ u.usuario }}</td>
             <td class="clave-col">{{ u.clave }}</td>
             <td>{{ u.rol }}</td>
+
+            <!-- Estado visible -->
             <td>
-              <a href="{% url 'actualizar_usuario' u.id %}" class="btn btn-success btn-sm">✏️ Editar</a>
+              {% if u.estado == 'A' %}
+              <span class="badge bg-success">Activo</span>
+              {% else %}
+              <span class="badge bg-secondary">Inactivo</span>
+              {% endif %}
+            </td>
+
+            <!-- ⚙️ Acciones (orden: alta/baja → editar → eliminar) -->
+            <td class="text-center">
+              <!-- Alta/Baja -->
+              <form
+                action="{% url 'toggle_usuario' u.id %}"
+                method="post"
+                class="d-inline"
+              >
+                {% csrf_token %}
+                <input
+                  type="hidden"
+                  name="next"
+                  value="{{ request.get_full_path }}"
+                />
+                {% if u.estado == 'A' %}
+                <button type="submit" class="btn btn-warning btn-sm">
+                  ⬇️ Dar de baja
+                </button>
+                {% else %}
+                <button type="submit" class="btn btn-primary btn-sm">
+                  ⬆️ Dar de alta
+                </button>
+                {% endif %}
+              </form>
+
+              <!-- Editar: deshabilitar si está inactivo -->
+              {% if u.estado == 'A' %}
+              <a
+                href="{% url 'actualizar_usuario' u.id %}"
+                class="btn btn-success btn-sm"
+                >✏️ Editar</a
+              >
+              {% else %}
+              <button type="button" class="btn btn-success btn-sm" disabled>
+                ✏️ Editar
+              </button>
+              {% endif %}
+
+              <!-- Eliminar: solo superadmin; deshabilitado si inactivo -->
+              {% if request.session.is_superadmin %} {% if u.estado == 'A' %}
               <button
                 type="button"
                 class="btn btn-danger btn-sm"
@@ -122,39 +175,43 @@
               >
                 🗑️ Eliminar
               </button>
+              {% else %}
+              <button type="button" class="btn btn-danger btn-sm" disabled>
+                🗑️ Eliminar
+              </button>
+              {% endif %} {% endif %}
             </td>
           </tr>
-          {% endfor %} {% else %}
+          {% empty %}
           <tr>
-            <td colspan="4" class="text-center text-muted">
+            <td colspan="5" class="text-center text-muted">
               ⚠️ No hay usuarios registrados aún
             </td>
           </tr>
-          {% endif %}
+          {% endfor %}
         </tbody>
       </table>
 
-      <!-- Botón volver -->
       <a href="{% url 'home' %}" class="volver-inicio">⇦ Volver al Inicio</a>
     </div>
-  </body>
 
-  <script>
-    function confirmarEliminacion(usuarioId) {
-      Swal.fire({
-        title: "¿Está seguro?",
-        text: "Este usuario será eliminado permanentemente",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Sí, eliminar",
-        cancelButtonText: "Cancelar",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          window.location.href = `/usuarios/${usuarioId}/eliminar/`;
-        }
-      });
-    }
-  </script>
+    <script>
+      function confirmarEliminacion(usuarioId) {
+        Swal.fire({
+          title: "¿Está seguro?",
+          text: "Este usuario será eliminado permanentemente",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Sí, eliminar",
+          cancelButtonText: "Cancelar",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = `/usuarios/${usuarioId}/eliminar/`;
+          }
+        });
+      }
+    </script>
+  </body>
 </html>
