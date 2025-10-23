@@ -3,6 +3,9 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from apps.medical.models.medico import Medico
 from apps.medical.services.turnos import TURNOS_MAP
+import datetime as dt
+from apps.medical.services.availability import disponibilidad_por_fecha
+
 
 # GET /api/medicos/<id>/turno/
 @require_GET
@@ -55,3 +58,24 @@ def disponibilidad_por_dia(request):
         "disponible": disponible,
         "mensaje": "Atiende ese día" if disponible else "No atiende ese día",
     })
+
+# GET /api/medicos/disponibilidad/slots/?medico_id=..&fecha=YYYY-MM-DD
+@require_GET
+def disponibilidad_slots_por_fecha(request):
+    medico_id = request.GET.get("medico_id")
+    fecha_str = request.GET.get("fecha")
+    if not medico_id or not fecha_str:
+        return JsonResponse({"ok": False, "error": "Parámetros 'medico_id' y 'fecha' requeridos"}, status=400)
+
+    try:
+        medico_id = int(medico_id)
+        fecha = dt.date.fromisoformat(fecha_str)
+    except Exception:
+        return JsonResponse({"ok": False, "error": "Parámetros inválidos"}, status=400)
+
+    m = Medico.objects.filter(pk=medico_id).first()
+    if not m:
+        return JsonResponse({"ok": False, "error": "Médico no encontrado"}, status=404)
+
+    data = disponibilidad_por_fecha(m, fecha)
+    return JsonResponse({"ok": True, **data}, status=200)

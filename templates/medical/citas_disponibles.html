@@ -1,0 +1,288 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Verificación de disponibilidad de citas</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    :root{ --naranja:#ff6600; --celeste:#00aaff; --negro:#222; }
+    body{
+      background: linear-gradient(135deg, var(--naranja) 0%, var(--celeste) 100%);
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .box{ width:min(1100px,96vw); background:#fff; border-radius:16px; padding:30px;
+      position:relative; box-shadow:0 10px 35px rgba(0,0,0,.18); border:3px solid var(--celeste); }
+    .logo{ display:block; margin:0 auto 10px; max-width:120px; height:auto; border-radius:10px;
+      border:3px solid var(--naranja); padding:6px; background:#fff; }
+    h2{ text-align:center; color:var(--naranja); font-weight:800; margin-bottom:18px;
+      text-shadow:1px 1px 3px rgba(0,0,0,.08); letter-spacing:1px; }
+    label.form-label{ font-weight:600; color:var(--negro); }
+    .form-control,.form-select{ border:2px solid var(--celeste); }
+    .form-control:focus,.form-select:focus{ border-color:var(--naranja); box-shadow:0 0 6px #ff6600aa; outline:none; }
+    .btn-primary{ background:linear-gradient(45deg, var(--celeste), #0077cc); border:none; font-weight:700; box-shadow:0 4px 14px rgba(0,170,255,.55); }
+    .btn-primary:hover{ background:linear-gradient(45deg, var(--naranja), #cc5200); box-shadow:0 6px 20px rgba(255,102,0,.6); }
+    .live-dot{ width:10px; height:10px; border-radius:50%; background:#bbb; display:inline-block; }
+    .day-card{ border:2px solid #e9f6ff; border-radius:14px; padding:16px; background:#fff; box-shadow:0 6px 16px rgba(0,0,0,.06); }
+    .slot-pill{ display:inline-block; padding:.38rem .6rem; border-radius:999px; background:#e3f2fd; color:#0d47a1;
+      font-weight:700; margin:.18rem; border:1px solid #bbdefb; font-size:.92rem; }
+    .muted{ color:#666; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <img src="{% static 'img/logo.jpg' %}" alt="Logo" class="logo">
+    <h2>🗓️ Verificación de disponibilidad de citas</h2>
+
+    <!-- Barra “en vivo” + acciones -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div></div>
+  <div class="d-flex align-items-center gap-2">
+    <span class="me-2">En vivo</span>
+    <span id="liveDot" class="live-dot"></span>
+
+    <!-- Mismo estilo que "Aplicar filtros" -->
+    <button type="button" class="btn btn-primary btn-sm" onclick="history.back()">
+      ← Atrás
+    </button>
+
+    <!-- Cambia 'home' por el nombre real de tu URL si es distinto -->
+    <a href="{% url 'home' %}" class="btn btn-primary btn-sm">
+      ⌂ Volver al inicio
+    </a>
+  </div>
+</div>
+
+
+    <!-- Filtros -->
+    <form class="row g-3 align-items-end mb-3" method="get" id="filterForm">
+      <div class="col-lg-4">
+        <label class="form-label">Especialidad</label>
+        <select name="specialty" id="specialty" class="form-select">
+          <option value="">— Todas —</option>
+          {% for s in specialties %}
+            <option value="{{ s.id }}" {% if selected_specialty == s.id %}selected{% endif %}>
+              {{ s.name }}
+            </option>
+          {% endfor %}
+        </select>
+
+      </div>
+      <div class="col-lg-4">
+        <label class="form-label">Profesional</label>
+        <select name="doctor" id="doctor" class="form-select" required>
+          <option value="">— Seleccione —</option>
+          {% for d in doctors %}
+            <option value="{{ d.id }}" {% if selected_doctor == d.id %}selected{% endif %}>
+              {{ d.nombre }}
+            </option>
+          {% endfor %}
+        </select>
+
+      </div>
+      <div class="col-lg-2">
+        <label class="form-label">Desde</label>
+        <input type="date" name="fecha" id="fecha" class="form-control" value="{{ start|date:'Y-m-d' }}">
+      </div>
+      <div class="col-lg-2">
+        <label class="form-label">Días</label>
+        <select name="days" id="days" class="form-select">
+          {% for n in days_choices %}
+            <option value="{{ n }}" {% if days == n %}selected{% endif %}>{{ n }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-12">
+        <button class="btn btn-primary px-4">Aplicar filtros</button>
+      </div>
+    </form>
+
+    <!-- Resultados (SSR inicial) -->
+    <div id="resultBox">
+      {% if items and items|length %}
+        <div class="row g-3">
+          {% for day in items %}
+          <div class="col-lg-6">
+            <div class="day-card">
+              <!-- Guardamos la fecha en data-iso para formatearla con JS -->
+              <h6 class="mb-2" data-date-iso="{{ day.fecha|date:'Y-m-d' }}">
+                <strong><!-- JS inserta fecha legible --></strong>
+              </h6>
+
+              {% if day.slots and day.slots|length %}
+  {% for s in day.slots %}
+    <button
+      type="button"
+      class="slot-pill slot"
+      data-date="{{ day.fecha|date:'Y-m-d' }}"
+      data-start="{{ s.inicio|default:'' }}"
+      data-end="{{ s.fin|default:'' }}"
+      data-doctor="{{ selected_doctor|default:'' }}">
+      <!-- JS pondrá el texto HH:mm–HH:mm -->
+    </button>
+  {% endfor %}
+{% else %}
+  <em class="muted">Sin horarios</em>
+{% endif %}
+
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="alert alert-light border">Configura los filtros y presiona “Aplicar filtros”.</div>
+      {% endif %}
+    </div>
+  </div>
+
+<script>
+(function(){
+  const input = document.getElementById('fecha');
+  const form  = document.getElementById('filterForm');
+  const min   = input.getAttribute('min'); // yyyy-mm-dd desde el servidor
+
+  // 1) Si el navegador no respeta min al teclear, corrige al vuelo
+  function clampToMin(){
+    if (input.value && input.value < min){
+      input.value = min;            // fuerza a hoy
+    }
+  }
+  input.addEventListener('change', clampToMin);
+  input.addEventListener('input',  clampToMin);
+
+  // 2) Evita enviar si por alguna razón quedó inválido
+  form.addEventListener('submit', (e)=>{
+    if (!input.value || input.value < min){
+      e.preventDefault();
+      input.value = min;
+      input.reportValidity?.();     // muestra UI nativa si aplica
+    }
+  });
+
+  // 3) Fallback (por si el HTML llegó sin min por cache): setéalo también en cliente
+  if (!min){
+    const todayStr = new Date().toISOString().slice(0,10);
+    input.setAttribute('min', todayStr);
+    clampToMin();
+  }
+})();
+</script>
+
+  <script>
+  (function(){
+    const form     = document.getElementById('filterForm');
+    const resultBox= document.getElementById('resultBox');
+    const liveDot  = document.getElementById('liveDot');
+    const fmtTime  = new Intl.DateTimeFormat(undefined,{hour:'2-digit',minute:'2-digit'});
+    const fmtDate  = new Intl.DateTimeFormat(undefined,{year:'numeric',month:'long',day:'2-digit'});
+    let lastVersion = "";
+
+    // Formatea el SSR inicial (slots y títulos de fecha)
+    function hydrateSSR(){
+  // Títulos de fecha
+  const fmtTime = new Intl.DateTimeFormat(undefined,{hour:'2-digit',minute:'2-digit'});
+  const fmtDate = new Intl.DateTimeFormat(undefined,{year:'numeric',month:'long',day:'2-digit'});
+
+  document.querySelectorAll('[data-date-iso]').forEach(h=>{
+    const iso = h.getAttribute('data-date-iso');
+    h.querySelector('strong').textContent = fmtDate.format(new Date(iso + 'T00:00:00'));
+  });
+
+  // Píldoras de slot
+  document.querySelectorAll('.slot').forEach(el=>{
+    const dateStr = el.dataset.date || '';
+    let startRaw  = (el.dataset.start || '').trim();
+    let endRaw    = (el.dataset.end || '').trim();
+
+    // Si no parecen ISO completas, compón con la fecha del día
+    // ISO completa típica: '2025-09-24T09:00:00'
+    if (!startRaw.includes('T') && dateStr) startRaw = toIsoFromPieces(dateStr, startRaw);
+    if (!endRaw.includes('T')   && dateStr) endRaw   = toIsoFromPieces(dateStr, endRaw);
+
+    const start = new Date(startRaw);
+    const end   = new Date(endRaw);
+
+    if (isNaN(start) || isNaN(end)) { el.textContent = '—'; return; }
+    el.textContent = `${fmtTime.format(start)}–${fmtTime.format(end)}`;
+
+    el.addEventListener('click', ()=>{
+      const params = new URLSearchParams({
+        doctor: el.dataset.doctor,
+        start:  start.toISOString(),
+        end:    end.toISOString()
+      });
+    });
+  });
+}
+    hydrateSSR();
+
+    async function fetchAvailability(silent=false){
+      // si no hay doctor seleccionado, no llamar
+      if(!document.getElementById('doctor').value){ return; }
+
+      const params = new URLSearchParams(new FormData(form));
+      const url = "{% url 'api_disponibilidad' %}?"+params.toString();
+      const res = await fetch(url, { headers: { "X-Requested-With":"XMLHttpRequest" }});
+      if(!res.ok) return;
+      const data = await res.json();
+
+      if (!silent || data.version !== lastVersion) {
+        lastVersion = data.version || "";
+        let html = '';
+        if (!data.items.length){
+          html = '<div class="alert alert-light border">No hay resultados con los filtros actuales.</div>';
+        } else {
+          html += '<div class="row g-3">';
+          data.items.forEach(day=>{
+            const d = new Date(day.fecha + 'T00:00:00'); // “YYYY-MM-DD” -> fecha segura
+            html += '<div class="col-lg-6"><div class="day-card">';
+            html += `<h6 class="mb-2"><strong>${fmtDate.format(d)}</strong></h6>`;
+            if(day.slots.length){
+              day.slots.forEach(s=>{
+                const h1 = fmtTime.format(new Date(s.inicio));
+                const h2 = fmtTime.format(new Date(s.fin));
+                html += `<button type="button" class="slot-pill">${h1}–${h2}</button>`;
+              });
+            } else {
+              html += '<em class="muted">Sin horarios</em>';
+            }
+            html += '</div></div>';
+          });
+          html += '</div>';
+        }
+        resultBox.innerHTML = html;
+      }
+    }
+
+    // “en vivo”: polling cada 8s con indicador
+    setInterval(async ()=>{
+      liveDot.style.background = (liveDot.style.background === 'rgb(46, 204, 113)') ? '#bbb' : '#2ecc71';
+      try { await fetchAvailability(true); } catch(e){}
+    }, 8000);
+  })();
+  </script>
+
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form      = document.getElementById('filterForm');
+  const doctorSel = document.getElementById('doctor');
+
+  // Si llegas con ?doctor=... en la URL o el select ya viene seleccionado por SSR,
+  // dispara el filtrado automáticamente (NO silencioso).
+  if (doctorSel && doctorSel.value) {
+    // pequeño delay para asegurarnos que el DOM y los valores quedaron listos
+    setTimeout(() => {
+      // fuerza a que 'fecha' tenga valor (por si el navegador no lo pone)
+      const fechaInput = document.getElementById('fecha');
+      if (fechaInput && !fechaInput.value) {
+        const todayStr = new Date().toISOString().slice(0,10);
+        fechaInput.value = todayStr;
+      }
+      fetchAvailability(false).catch(()=>{});
+    }, 50);
+  }
+});
+</script>
+</body>
+</html>

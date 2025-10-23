@@ -50,6 +50,10 @@ from apps.medical.views.editar_cita import editar_cita
 from apps.medical.views.cancelar_cita import cancelar_cita
 from apps.medical.views.citas_pendientes import citas_pendientes, confirmar_cita, cancelar_cita
 
+from apps.medical.views.citas_disponibles import citas_disponibles
+from apps.medical.views.medicos_turno import turno_de_medico, disponibilidad_por_dia, disponibilidad_slots_por_fecha
+from apps.medical.views.citas_disponibles_api import api_disponibilidad
+from apps.medical.views.buscar_medicos import buscar_medicos
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -108,8 +112,12 @@ urlpatterns = [
 
     path("", include("apps.medical.urls")),
     
-    
+
     path("audit/", include("apps.audit.urls")),
 
-
+    path('citas/citas_disponibles/', citas_disponibles, name='citas_disponibles'),
+    path('api/medicos/disponibilidad/slots/', disponibilidad_slots_por_fecha, name='api_disponibilidad_slots'),
+    path('api/citas/disponibilidad/', api_disponibilidad, name='api_disponibilidad'),
+    path('api/medicos/disponibilidad/', disponibilidad_por_dia, name='api_disponibilidad_medico'),
+    path('medicos/buscar/', buscar_medicos, name='buscar_medicos'),
 ]

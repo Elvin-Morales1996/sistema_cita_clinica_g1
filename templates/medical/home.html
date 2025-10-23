@@ -200,6 +200,9 @@
       <a href="{% url 'auto_asignacion' %}" class="d-block mt-1">⚡ Asignación automática</a>
       {% endif %}
 
+      <a href="{% url 'citas_disponibles' %}" class="d-block mt-1">🗓️✅ Verificación de disponibilidad de citas</a>
+      <a href="{% url 'buscar_medicos' %}" class="d-block mt-1">🔎🧑‍⚕️🩺 Búsqueda de médicos por especialidad</a>
+
       <!-- Solo Administrador -->
       {% if rol_usuario|lower in 'admin administrador' %}
       <a class="nav-link" data-bs-toggle="collapse" href="#plantillasMenu" role="button" aria-expanded="false"
