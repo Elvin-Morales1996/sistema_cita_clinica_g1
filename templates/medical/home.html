@@ -200,6 +200,9 @@
       <a href="{% url 'auto_asignacion' %}" class="d-block mt-1">⚡ Asignación automática</a>
       {% endif %}
 
+      <a href="{% url 'citas_disponibles' %}" class="d-block mt-1">🗓️✅ Verificación de disponibilidad de citas</a>
+      <a href="{% url 'buscar_medicos' %}" class="d-block mt-1">🔎🧑‍⚕️🩺 Búsqueda de médicos por especialidad</a>
+
       <!-- Solo Administrador -->
       {% if rol_usuario|lower in 'admin administrador' %}
       <a class="nav-link" data-bs-toggle="collapse" href="#plantillasMenu" role="button" aria-expanded="false"
@@ -221,7 +224,10 @@
         <a href="{% url 'listar_medicos' %}" class="d-block mt-1">📋 Listado de Médicos</a>
       </div>
 
-      <a href="{% url 'usuario' %}" class="d-block mt-1">🔐 Usuarios</a>
+      {% endif %}
+
+      {% if request.session.rol == 'Administrador' %}
+        <a href="{% url 'usuario' %}" class="d-block mt-1">👥🔐 Gestión de usuarios</a>
       {% endif %}
 
       <!-- Reportes para roles permitidos -->
@@ -324,12 +330,14 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
-    // Mostrar mensajes de error como alertas emergentes
-    document.addEventListener('DOMContentLoaded', function() {
-      // Verificar si hay mensajes de error en Django messages
-      {% if messages %}
-        {% for message in messages %}
-          {% if message.tags == 'error' %}
+  document.addEventListener('DOMContentLoaded', function() {
+    // ✅ Mostrar alerta SOLO si estás en la página de login
+    const currentPath = window.location.pathname;
+
+    {% if messages %}
+      {% for message in messages %}
+        {% if message.tags == 'error' %}
+          if (currentPath === '/login/' || currentPath === '/login') {
             Swal.fire({
               icon: 'error',
               title: 'Acceso Denegado',
@@ -337,11 +345,12 @@
               confirmButtonText: 'Entendido',
               confirmButtonColor: '#d33'
             });
-          {% endif %}
-        {% endfor %}
-      {% endif %}
-    });
-  </script>
+          }
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  });
+</script>
 </body>
 
 </html>

@@ -9,6 +9,8 @@ def crear_usuario(request):
     if request.method == "POST":
         form = UsuarioForm(request.POST)
         if form.is_valid():
+            usuario_nuevo = form.save(commit=False)
+            usuario_nuevo.estado = 'A' 
             usuario_nuevo = form.save()
 
             # Registrar creación en auditoría
