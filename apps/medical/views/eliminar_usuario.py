@@ -13,10 +13,9 @@ def eliminar_usuario(request, usuario_id):
     usuario_logueado = None
     if request.session.get('user_id'):
         try:
-            from apps.medical.models.usuario import Usuario
             usuario_logueado = Usuario.objects.get(id=request.session['user_id'])
-        except:
-            pass
+        except Usuario.DoesNotExist:
+            usuario_logueado = None
 
     AuditLog.objects.create(
         usuario=usuario_logueado,  # Usuario que realizó la eliminación
@@ -25,4 +24,4 @@ def eliminar_usuario(request, usuario_id):
     )
 
     usuario.delete()
-    return redirect("usuario")  # 👈 vuelve a la lista de usuarios
+    return redirect("usuario") 

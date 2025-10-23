@@ -1,7 +1,7 @@
 from django.db import models 
 from django.conf import settings
 from django.utils import timezone
-from django.contrib.auth.models import User
+from apps.medical.models import Usuario
 
 
 class ActivityLog(models.Model):
@@ -40,15 +40,18 @@ class AlertRule(models.Model):
 
 
 class AuditLog(models.Model):
-    ACTION_CHOICES = [
+    ACCIONES = [
+        ('user_creation', 'Creación de usuario'),
+        ('user_update', 'Actualización de usuario'),
+        ('user_deletion', 'Eliminación de usuario'),
         ('login', 'Inicio de sesión'),
         ('logout', 'Cierre de sesión'),
     ]
 
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    accion = models.CharField(max_length=50, choices=ACTION_CHOICES)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)
+    accion = models.CharField(max_length=50, choices=ACCIONES)
     detalles = models.TextField(blank=True, null=True)
     fecha_hora = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.accion} - {self.fecha_hora}"
+        return f"{self.usuario.usuario if self.usuario else 'Usuario desconocido'} - {self.accion}"
