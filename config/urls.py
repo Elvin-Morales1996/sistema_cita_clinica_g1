@@ -52,6 +52,7 @@ from apps.medical.views.medicos_turno import turno_de_medico, disponibilidad_por
 from apps.medical.views.citas_disponibles_api import api_disponibilidad
 from apps.medical.views.buscar_medicos import buscar_medicos
 from apps.medical.views.usuario_dar_baja import permisos
+from apps.medical.views.reporte_citas import reporte_citas
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -117,4 +118,8 @@ urlpatterns = [
     path('medicos/buscar/', buscar_medicos, name='buscar_medicos'),
     #path('usuarios/<int:pk>/eliminar/', eliminar_usuario, name='eliminar_usuario'),
     path('usuarios/<int:pk>/permisos/', permisos, name='permisos'),
+    
+    #rutas para reportes de citas
+    path('reporte_citas/', reporte_citas, name='reporte_citas'),
+
 ]

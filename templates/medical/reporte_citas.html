@@ -1,0 +1,65 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Citas Agendadas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="p-4 bg-light">
+<div class="container bg-white p-4 rounded shadow">
+    <h2 class="text-center mb-4 text-primary">Reporte de Citas Agendadas</h2>
+
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label>Fecha inicio</label>
+            <input type="date" name="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+        </div>
+        <div class="col-md-3">
+            <label>Fecha fin</label>
+            <input type="date" name="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+        </div>
+        <div class="col-md-3">
+            <label>Médico</label>
+            <input type="text" name="medico" class="form-control" placeholder="Buscar médico">
+        </div>
+        <div class="col-md-3">
+            <label>Especialidad</label>
+            <input type="text" name="especialidad" class="form-control" placeholder="Especialidad">
+        </div>
+        <div class="col-12 text-end">
+            <button type="submit" class="btn btn-primary">Filtrar</button>
+            <button type="submit" name="export_pdf" class="btn btn-danger">PDF</button>
+            <button type="submit" name="export_excel" class="btn btn-success">Excel</button>
+        </div>
+    </form>
+
+    <table class="table table-bordered table-striped">
+        <thead class="table-primary">
+            <tr>
+                <th>Paciente</th>
+                <th>Médico</th>
+                <th>Especialidad</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cita in citas %}
+                <tr>
+                    <td>{{ cita.paciente.nombre }} {{ cita.paciente.apellido }}</td>
+                    <td>{{ cita.medico.nombre }}</td>
+                    <td>{{ cita.medico.especialidad }}</td>
+                    <td>{{ cita.fecha }}</td>
+                    <td>{{ cita.hora }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center text-muted">No hay citas registradas en este rango</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+</body>
+</html>
