@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Imprimir — Historial de Citas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"/>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      .table th, .table td { padding: .4rem; }
+    }
+  </style>
+</head>
+<body class="p-4">
+  <div class="d-flex justify-content-between align-items-center no-print">
+    <h4 class="m-0">🖨️ Imprimir — Historial de Citas</h4>
+    <button class="btn btn-secondary" onclick="window.print()">Imprimir</button>
+  </div>
+
+  <hr class="no-print"/>
+
+  <div class="mb-3">
+    <strong>Paciente:</strong> {{ paciente.nombre }} {{ paciente.apellido }}<br>
+    <strong>Identificación:</strong> {{ paciente.identificacion }}<br>
+    <strong>Fecha de generación:</strong> {{ now|default:None }}
+  </div>
+
+  <table class="table table-bordered table-sm">
+    <thead class="table-light">
+      <tr>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Profesional</th>
+        <th>Especialidad</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in citas %}
+        <tr>
+          <td>{{ c.fecha }}</td>
+          <td>{{ c.hora|time:"H:i" }}</td>
+          <td>{{ c.medico.nombre }}</td>
+          <td>{{ c.medico.especialidad }}</td>
+          <td>{{ c.estado|title }}</td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5" class="text-center">Sin datos</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <script>
+    // auto-print si lo deseas:
+    // window.onload = () => window.print();
+  </script>
+</body>
+</html>

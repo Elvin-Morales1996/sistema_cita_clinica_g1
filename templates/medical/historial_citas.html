@@ -1,0 +1,193 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Historial de Citas</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff6600 0%, #00aaff 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .form-container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            padding: 35px 40px 40px 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 3px solid #00aaff;
+            position: relative;
+        }
+
+        h2 {
+            color: #ff6600;
+            font-weight: 800;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+            letter-spacing: 1.2px;
+        }
+
+        label.form-label {
+            font-weight: 600;
+            color: #222222;
+        }
+
+        input.form-control,
+        select.form-control,
+        textarea.form-control {
+            border: 2px solid #00aaff;
+            transition: border-color 0.3s ease;
+        }
+
+        input.form-control:focus,
+        select.form-control:focus,
+        textarea.form-control:focus {
+            border-color: #ff6600;
+            box-shadow: 0 0 6px #ff6600aa;
+            outline: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #00aaff, #0077cc);
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 170, 255, 0.6);
+            transition: background 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #ff6600, #cc5200);
+            box-shadow: 0 6px 20px rgba(255, 102, 0, 0.7);
+        }
+
+        .btn-secondary {
+            background: #222222;
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            transition: background 0.3s ease;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #555555;
+            color: white;
+        }
+
+        .text-danger {
+            font-size: 0.875rem;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+    <div class="card mt-3">
+        <div class="card-body">
+            <form class="row g-2 mb-3" method="get">
+                <div class="container py-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h3 class="mb-0">🕓 Historial de Citas — {{ paciente.nombre }} {{ paciente.apellido }}</h3>
+                        <div>
+                            <a href="{{ export_urls.csv }}" class="btn btn-sm btn-outline-primary me-2">⬇️ CSV</a>
+                            <a href="{{ export_urls.print }}" class="btn btn-sm btn-outline-secondary"
+                                target="_blank">🖨️ Imprimir</a>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-3">
+                        <label class="form-label">Desde</label>
+                        <input type="date" name="desde" value="{{ desde }}" class="form-control">
+                    </div>
+                    <div class="col-sm-3">
+                        <label class="form-label">Hasta</label>
+                        <input type="date" name="hasta" value="{{ hasta }}" class="form-control">
+                    </div>
+                    <div class="col-sm-3 align-self-end">
+                        <button class="btn btn-primary w-100">Filtrar</button>
+                    </div>
+            </form>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Hora</th>
+                            <th>Profesional</th>
+                            <th>Especialidad</th>
+                            <th style="width: 180px;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in citas %}
+                        <tr>
+                            <td>{{ c.fecha }}</td>
+                            <td>{{ c.hora|time:"H:i" }}</td>
+                            <td>{{ c.medico.nombre }}</td>
+                            <td>{{ c.medico.especialidad }}</td>
+                            <td>
+                                {% if c.estado == "atendida" %}
+                                <span class="badge bg-success">Atendida</span>
+                                {% elif c.estado == "cancelada" %}
+                                <span class="badge bg-danger">Cancelada</span>
+                                {% elif c.estado == "reprogramada" %}
+                                <span class="badge bg-warning text-dark">Reprogramada</span>
+                                {% elif c.estado == "confirmada" %}
+                                <span class="badge bg-info text-dark">Confirmada</span>
+                                {% else %}
+                                <span class="badge bg-secondary">Pendiente</span>
+                                {% endif %}
+                            </td>
+                           
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center py-4">No hay citas pasadas para este paciente.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <a href="{% url 'home' %}" class="btn-primary">⬅ Volver al Inicio</a>
+
+            {% if citas.paginator.num_pages > 1 %}
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if citas.has_previous %}
+                    <li class="page-item"><a class="page-link"
+                            href="?page={{ citas.previous_page_number }}&desde={{ desde }}&hasta={{ hasta }}">Anterior</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                    {% endif %}
+                    <li class="page-item disabled"><span class="page-link">Página {{ citas.number }} de {{
+                            citas.paginator.num_pages }}</span></li>
+                    {% if citas.has_next %}
+                    <li class="page-item"><a class="page-link"
+                            href="?page={{ citas.next_page_number }}&desde={{ desde }}&hasta={{ hasta }}">Siguiente</a>
+                    </li>
+                    {% else %}
+                    <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+                    {% endif %}
+                </ul>
+
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+    </div>
+</body>
+
+</html>

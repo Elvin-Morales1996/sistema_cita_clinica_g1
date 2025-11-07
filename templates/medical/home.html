@@ -195,26 +195,14 @@
         </a>
       </div>
 
-      <!-- Asignación automática para roles permitidos -->
       {% if rol_usuario|lower in 'admin administrador médico recepcionista' %}
       <a href="{% url 'auto_asignacion' %}" class="d-block mt-1">⚡ Asignación automática</a>
       {% endif %}
 
-      <a href="{% url 'citas_disponibles' %}" class="d-block mt-1">🗓️✅ Verificación de disponibilidad de citas</a>
-      <a href="{% url 'buscar_medicos' %}" class="d-block mt-1">🔎🧑‍⚕️🩺 Búsqueda de médicos por especialidad</a>
+      <a href="{% url 'citas_disponibles' %}" class="d-block mt-1">🗓️✅ Verificación de disponibilidad</a>
+      <a href="{% url 'buscar_medicos' %}" class="d-block mt-1">🔎🧑‍⚕️ Búsqueda de Médicos</a>
 
-      <!-- Solo Administrador -->
       {% if rol_usuario|lower in 'admin administrador' %}
-      <a class="nav-link" data-bs-toggle="collapse" href="#plantillasMenu" role="button" aria-expanded="false"
-        aria-controls="plantillasMenu">
-        ✉️ Plantillas de Correo
-      </a>
-      <div class="collapse ps-3" id="plantillasMenu">
-        <a href="{% url 'listar_plantillas' %}" class="d-block mt-1">📋 Listado de Plantillas</a>
-        <a href="{% url 'crear_plantilla' %}" class="d-block mt-1">➕ Crear Plantilla</a>
-      </div>
-
-      <!-- Gestión de Médicos -->
       <a class="nav-link" data-bs-toggle="collapse" href="#medicosMenu" role="button" aria-expanded="false"
         aria-controls="medicosMenu">
         👨‍⚕️ Gestión de Médicos
@@ -223,14 +211,12 @@
         <a href="{% url 'crear_perfil_medico' %}" class="d-block mt-1">➕ Crear Perfil Médico</a>
         <a href="{% url 'listar_medicos' %}" class="d-block mt-1">📋 Listado de Médicos</a>
       </div>
-
       {% endif %}
 
       {% if request.session.rol == 'Administrador' %}
-        <a href="{% url 'usuario' %}" class="d-block mt-1">👥🔐 Gestión de usuarios</a>
+      <a href="{% url 'usuario' %}" class="d-block mt-1">👥🔐 Gestión de usuarios</a>
       {% endif %}
 
-      <!-- Reportes para roles permitidos -->
       {% if rol_usuario|lower in 'admin administrador médico recepcionista' %}
       <a href="{% url 'buscar_pacientes' %}">📊 Reportes</a>
       {% endif %}
@@ -285,7 +271,7 @@
                 <th>Médico</th>
                 <th>Fecha</th>
                 <th>Hora</th>
-                <th>Acción</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -305,6 +291,10 @@
                     </a>
                     <a href="{% url 'cancelar_cita' cita.id %}" class="btn btn-xs btn-danger" title="Cancelar la cita" style="font-size: 0.75rem; padding: 0.2rem 0.4rem;">
                       ❌ Cancelar
+                    </a>
+                    <!-- 🕓 Nuevo botón: Historial de citas del paciente -->
+                    <a href="{% url 'historial_citas' cita.paciente.id %}" class="btn btn-xs btn-primary btn-action-primary" title="Ver historial de citas" style="font-size: 0.75rem; padding: 0.2rem 0.4rem;">
+                      🕓 Historial
                     </a>
                   </div>
                 </td>
@@ -326,27 +316,24 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // ✅ Mostrar alerta SOLO si estás en la página de login
-    const currentPath = window.location.pathname;
-
-    {% if messages %}
-      {% for message in messages %}
-        {% if message.tags == 'error' %}
-          if (currentPath === '/login/' || currentPath === '/login') {
-            Swal.fire({
-              icon: 'error',
-              title: 'Acceso Denegado',
-              text: '{{ message }}',
-              confirmButtonText: 'Entendido',
-              confirmButtonColor: '#d33'
-            });
-          }
-        {% endif %}
-      {% endfor %}
-    {% endif %}
-  });
-</script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const currentPath = window.location.pathname;
+      {% if messages %}
+        {% for message in messages %}
+          {% if message.tags == 'error' %}
+            if (currentPath === '/login/' || currentPath === '/login') {
+              Swal.fire({
+                icon: 'error',
+                title: 'Acceso Denegado',
+                text: '{{ message }}',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#d33'
+              });
+            }
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    });
+  </script>
 </body>
-
 </html>
