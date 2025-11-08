@@ -1,0 +1,234 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Asistencia de Citas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #2196f3 0%, #f57c00 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 3px solid #2196f3;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            color: #2196f3;
+            font-weight: 800;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .filters {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+        }
+
+        .table-responsive {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            margin-bottom: 0;
+        }
+
+        thead {
+            background: linear-gradient(45deg, #2196f3, #1976d2);
+            color: white;
+        }
+
+        tbody tr:hover {
+            background-color: #e3f2fd;
+        }
+
+        .btn-export {
+            margin: 5px;
+            border-radius: 8px;
+            font-weight: 600;
+            padding: 8px 16px;
+        }
+
+        .btn-pdf {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-pdf:hover {
+            background-color: #c82333;
+        }
+
+        .btn-excel {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-excel:hover {
+            background-color: #218838;
+        }
+
+        .btn-filter {
+            background-color: #2196f3;
+            border-color: #2196f3;
+        }
+
+        .btn-filter:hover {
+            background-color: #1976d2;
+        }
+
+        .status-attended {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .status-absent {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .filters .row > div {
+                margin-bottom: 15px;
+            }
+
+            .btn-export {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{% static 'img/logo.jpg' %}" alt="Logo Clínica Vital Salud" class="logo">
+            <h2>📊 Reporte de Asistencia de Citas</h2>
+            <p class="subtitle">Sistema de Gestión de Citas Médicas</p>
+        </div>
+
+        <div class="filters">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="fecha_inicio" class="form-label">Fecha Inicio</label>
+                    <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control" value="{{ fecha_inicio }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="fecha_fin" class="form-label">Fecha Fin</label>
+                    <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" value="{{ fecha_fin }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="medico" class="form-label">Médico</label>
+                    <select name="medico" id="medico" class="form-control">
+                        <option value="">Todos los médicos</option>
+                        {% for m in medicos %}
+                        <option value="{{ m.nombre }}" {% if medico == m.nombre %}selected{% endif %}>{{ m.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="especialidad" class="form-label">Especialidad</label>
+                    <select name="especialidad" id="especialidad" class="form-control">
+                        <option value="">Todas las especialidades</option>
+                        {% for esp in especialidades %}
+                        <option value="{{ esp }}" {% if especialidad == esp %}selected{% endif %}>{{ esp }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 text-center">
+                    <button type="submit" class="btn btn-primary btn-filter">🔍 Filtrar</button>
+                    <button type="submit" name="export_pdf" class="btn btn-danger btn-export">📄 Exportar PDF</button>
+                    <button type="submit" name="export_excel" class="btn btn-success btn-export">📊 Exportar Excel</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>👤 Paciente</th>
+                        <th>📅 Fecha</th>
+                        <th>🕐 Hora</th>
+                        <th>👨‍⚕️ Médico</th>
+                        <th>🏥 Especialidad</th>
+                        <th>📊 Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cita in citas %}
+                    <tr>
+                        <td>{{ cita.paciente.nombre }} {{ cita.paciente.apellido }}</td>
+                        <td>{{ cita.fecha|date:"d/m/Y" }}</td>
+                        <td>{{ cita.hora|time:"H:i" }}</td>
+                        <td>{{ cita.medico.nombre }}</td>
+                        <td>{{ cita.medico.especialidad }}</td>
+                        <td>
+                            {% if cita.estado == "atendida" %}
+                                <span class="status-attended">✅ Asistió</span>
+                            {% else %}
+                                <span class="status-absent">❌ No Asistió</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="no-data">
+                            No se encontraron citas en el rango de fechas especificado.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{% url 'buscar_pacientes' %}" class="btn btn-secondary">⬅ Volver a Reportes</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

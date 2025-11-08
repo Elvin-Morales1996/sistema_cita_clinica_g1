@@ -53,6 +53,7 @@ from apps.medical.views.citas_disponibles_api import api_disponibilidad
 from apps.medical.views.buscar_medicos import buscar_medicos
 from apps.medical.views.usuario_dar_baja import permisos
 from apps.medical.views.reporte_citas import reporte_citas
+from apps.medical.views.reporte_asistencia import reporte_asistencia
 
 from apps.medical.views.historial_citas import historial_citas
 from apps.medical.views.historial_citas import exportar_historial_citas_csv
@@ -125,6 +126,7 @@ urlpatterns = [
     
     #rutas para reportes de citas
     path('reporte_citas/', reporte_citas, name='reporte_citas'),
+    path('reporte_asistencia/', reporte_asistencia, name='reporte_asistencia'),
 
     path("pacientes/<int:paciente_id>/citas/historial/", historial_citas, name="historial_citas"),
     path("pacientes/<int:paciente_id>/citas/historial/export/csv/", exportar_historial_citas_csv, name="historial_citas_export_csv"),

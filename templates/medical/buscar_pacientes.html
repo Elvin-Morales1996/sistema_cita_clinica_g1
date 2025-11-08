@@ -86,6 +86,15 @@
     <div class="table-container">
         <h2>📊 Reportes - Historial Clínico</h2>
 
+        <div class="text-center mb-4">
+            <a href="{% url 'reporte_citas' %}" class="btn btn-success btn-lg me-3">
+                📅 Reporte de Citas Agendadas
+            </a>
+            <a href="{% url 'reporte_asistencia' %}" class="btn btn-primary btn-lg">
+                📈 Reporte de Asistencia de Citas
+            </a>
+        </div>
+
         <div class="form-container">
             <form method="get">
                 <div class="row mb-3">

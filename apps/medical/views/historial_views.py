@@ -43,36 +43,6 @@ def buscar_pacientes(request):
         'search_type': search_type,
         'rol_usuario': rol_usuario
     })
-    form = BuscarPacienteForm(request.GET or None)
-    pacientes = Paciente.objects.all()
-    search_value = ''
-    search_type = 'identificacion'
-    if form.is_valid():
-        search_value = form.cleaned_data['search']
-        search_type = form.cleaned_data['search_type']
-        if search_value:
-            if search_type == 'identificacion':
-                pacientes = pacientes.filter(identificacion__icontains=search_value)
-            elif search_type == 'nombre_apellido':
-                # Split search_value into nombre and apellido
-                parts = search_value.split()
-                if len(parts) >= 2:
-                    nombre = parts[0]
-                    apellido = ' '.join(parts[1:])
-                    pacientes = pacientes.filter(
-                        Q(nombre__icontains=nombre) & Q(apellido__icontains=apellido)
-                    )
-                else:
-                    pacientes = pacientes.filter(
-                        Q(nombre__icontains=search_value) |
-                        Q(apellido__icontains=search_value)
-                    )
-    return render(request, 'medical/buscar_pacientes.html', {
-        'form': form,
-        'pacientes': pacientes,
-        'search_value': search_value,
-        'search_type': search_type
-    })
 
 @require_role(['Administrador', 'Médico', 'Recepcionista', 'Paciente'])
 def ver_historial(request, paciente_id):
