@@ -102,8 +102,8 @@ DATABASES = {
         'HOST': 'dpg-d3nfvs2dbo4c73cuufog-a.oregon-postgres.render.com',
         'PORT': '5432',
         'OPTIONS': {
-            'sslmode': 'require',  # conexión segura SSL
-        },
+            'sslmode': 'require'
+        }
     }
 }
 

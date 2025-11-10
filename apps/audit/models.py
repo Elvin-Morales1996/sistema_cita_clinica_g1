@@ -48,10 +48,23 @@ class AuditLog(models.Model):
         ('logout', 'Cierre de sesión'),
     ]
 
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)
+    usuario_sistema = models.ForeignKey(
+        Usuario, on_delete=models.CASCADE, null=True, blank=True,
+        help_text="Usuario del sistema clínico"
+    )
+
+    usuario_admin = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True,
+        help_text="Usuario del panel admin"
+    )
+
     accion = models.CharField(max_length=50, choices=ACCIONES)
     detalles = models.TextField(blank=True, null=True)
     fecha_hora = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.usuario.usuario if self.usuario else 'Usuario desconocido'} - {self.accion}"
+        if self.usuario_sistema:
+            return f"{self.usuario_sistema.usuario} - {self.accion}"
+        elif self.usuario_admin:
+            return f"{self.usuario_admin.username} (admin) - {self.accion}"
+        return f"Usuario desconocido - {self.accion}"
