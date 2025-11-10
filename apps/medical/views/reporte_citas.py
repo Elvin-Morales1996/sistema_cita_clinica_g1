@@ -2,11 +2,13 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.utils import timezone
 from apps.medical.models import Cita
+from apps.core.services.auth_service import require_role
 import pandas as pd
 from io import BytesIO
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 
+@require_role(['Administrador', 'Médico', 'Recepcionista'])
 def reporte_citas(request):
     citas = Cita.objects.all()
 
