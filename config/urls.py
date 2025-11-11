@@ -59,6 +59,9 @@ from apps.medical.views.historial_citas import historial_citas
 from apps.medical.views.historial_citas import exportar_historial_citas_csv
 from apps.medical.views.historial_citas import imprimir_historial_citas
 
+from apps.medical.views.reporte_tiempoEspera import marcar_llegada, iniciar_consulta
+from apps.medical.views.reporte_tiempoDeEspera import reporte_tiempos_espera
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -131,5 +134,10 @@ urlpatterns = [
     path("pacientes/<int:paciente_id>/citas/historial/", historial_citas, name="historial_citas"),
     path("pacientes/<int:paciente_id>/citas/historial/export/csv/", exportar_historial_citas_csv, name="historial_citas_export_csv"),
     path("pacientes/<int:paciente_id>/citas/historial/imprimir/", imprimir_historial_citas, name="historial_citas_imprimir"),
+
+    #rutas para reportes de tiempo de espera
+    path('citas/<int:cita_id>/llegada/', marcar_llegada, name='marcar_llegada'),
+    path('citas/<int:cita_id>/inicio/', iniciar_consulta, name='iniciar_consulta'),
+    path('reportes/tiempos-espera/', reporte_tiempos_espera, name='reporte_tiempos_espera'),
 
 ]

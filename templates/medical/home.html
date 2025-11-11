@@ -296,6 +296,8 @@
                     <a href="{% url 'historial_citas' cita.paciente.id %}" class="btn btn-xs btn-primary btn-action-primary" title="Ver historial de citas" style="font-size: 0.75rem; padding: 0.2rem 0.4rem;">
                       🕓 Historial
                     </a>
+                    <a href="{% url 'marcar_llegada' cita.id %}" class="btn btn-info btn-sm">Marcar Llegada</a>
+                    <a href="{% url 'iniciar_consulta' cita.id %}" class="btn btn-primary btn-sm">Iniciar Consulta</a>
                   </div>
                 </td>
               </tr>
